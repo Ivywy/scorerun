@@ -1,0 +1,1 @@
+AMD Radeon RX 6500M  - [Score=505] - [DurationInMs=59990] - [Resolution=1924x1061] - [MSAA=8X] - [Mode=Windowed] - GPU Temp Max=0.0°C - GPU VDDC Current Max=50.0A - FurMark 1.29.0.0 - [Date=Thu Aug  4 17:04:34 2022 ]

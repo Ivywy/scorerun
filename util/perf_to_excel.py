@@ -40,7 +40,7 @@ def write2excel(fileName,sheetName,data):
     if not fileName.endswith(".xls"):
         raise Exception("destination file should end with xls")
     row_head = ["AC + HG", "DC + HG", "AC + NoHG", "DC + NoHG"]
-    column_head = ["TimeSpy", "Furmark", "Heaven11", "FireStrike"]
+    column_head = ["TimeSpy_Score","TimeSpy_FPS", "Furmark", "Heaven11", "FireStrike","3dmark11"]
 
     # 检查data[0]与data[1]是否在row_head与column_head中
     if data[0] not in row_head or data[1] not in column_head:

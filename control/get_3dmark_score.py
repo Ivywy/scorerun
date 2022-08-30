@@ -34,46 +34,65 @@ def extract_3dResult(filename,dst_name):
         print(filename, "{} is not a file".format(filename))
         sys.exit(0)
 
-def read_xml(file_path,app,item):
-    data=dict()
+def read_xml(file_path,item):
+    data=float()
     dom = ElementTree.parse(file_path)
     root = dom.getroot()
-    # print(root)
     result = root.findall(".//result/")
-    # print(result)
+    print(result)
     for element in result:
-        # print(element.tag)
-        # print("===============")
-        # data[element.tag]=element.text
         if element.tag == item:
-            data[app] = element.text
+            data= element.text
             break
+
     return data
 
 
 def get_3dmark_score(rootDir,dstFile,data):
     fileList=get_3dmark(rootDir)
-    print(fileList)
-    score=dict
-    if data[1]=="TimeSpy":
+    score=float()
+    if data[1]=="TimeSpy_Score":
         for file in fileList:
-            if data[1] in file:
-                timespy_log=extract_3dResult(file, os.path.join("data", data[1],"3dmarkResult-{}.xml".format(common.get_time())))
-                score=read_xml(timespy_log,data[1],"TimeSpyExtremeCustomGraphicsScore")
-
+            if "TimeSpy" in file:
+                timespy_log=extract_3dResult(file, os.path.join(rootDir,"3dmarkResult-{}.xml".format(common.get_time())))
+                score=read_xml(timespy_log,"TimeSpyExtremeCustomGraphicsScore")
                 break
+    elif data[1] == "TimeSpy_FPS":
+        for file in fileList:
+            if "TimeSpy" in file:
+                timespy_log = extract_3dResult(file, os.path.join(rootDir,
+                                                                  "3dmarkResult-{}.xml".format(common.get_time())))
+                score = read_xml(timespy_log, "TimeSpyExtremeCustomGraphicsScore1")
+                # TODO 再增加判断
+                if score == 0:
+                    score=read_xml(timespy_log,"TimeSpyCustomGraphicsTest2")
+                    break
+
     elif data[1]=="FireStrike":
         for file in fileList:
             if data[1] in file:
-                timespy_log=extract_3dResult(file, os.path.join("data", data[1],"3dmarkResult-{}.xml".format(common.get_time())))
-                score=read_xml(timespy_log,data[1],"FireStrikeCustomGraphicsScore")
+                timespy_log=extract_3dResult(file, os.path.join(rootDir,"3dmarkResult-{}.xml".format(common.get_time())))
+                score=read_xml(timespy_log,"FireStrikeCustomGraphicsScore")
                 break
     else:
         raise Exception("Parameter error")
+    return write2excel(dstFile, "sheet1", [data[0], data[1], float(score)])
 
-    return write2excel(dstFile, "sheet1", [data[0], data[1], float(score[data[1]])])
+def get_3dmark11(rootDir):
+    allFiles = []
+    fileList = os.listdir(rootDir)  # 列出文件夹下所有的目录与文件
+    for filename in fileList:
+        pathTmp = os.path.join(rootDir, filename)  # 获取path与filename组合后的路径
+        if os.path.isdir(pathTmp):  # 如果是目录
+            get_3dmark(pathTmp)  # 则递归查找
+        elif filename.endswith("3dmark-11-result"):  # 如果不是目录，则比较后缀名
+            allFiles.append(pathTmp)
+    return allFiles
 
-
-
-    # score=read_xml(file,"TimeSpy","TimeSpyExtremeCustomGraphicsScore")
-    # return write2excel(dstFile,"sheet1",[data[0], data[1], float(score["TimeSpy"])])
+def get_3dmark11_score(rootDir,dstFile,data):
+    fileList = get_3dmark11(rootDir)
+    score = float()
+    for file in fileList:
+        log=extract_3dResult(file,os.path.join(rootDir,"3dmark11Result-{}.xml".format(common.get_time())))
+        score = read_xml(log, "GraphicsScore")
+        print("111111111",score)

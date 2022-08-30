@@ -17,35 +17,35 @@ def get_html(rootDir):
     return allFiles
 
 # 读取log内容
-def read_html(file_path,app):
+def read_html(file_path):
     doc = open(file_path, 'r', encoding='utf-8').read()
     soup = BeautifulSoup(doc, "html.parser")
     total=soup.findAll(text=re.compile('.*?Total.*?'))
     if len(total):
         s = ""
-        dic = {}
+        # dic = {}
         for str in total:
             if str.find("Total scores") != -1:
                 s = str.split("Total scores: ")[1]
                 break
-        dic[app]=float(s)
-        return dic
+
+        return float(s)
     else:
         print("There are no keyword 'total' in file {}".format(file_path))
         return
 
-def get_html_score(rootDir,dstFile):
+def get_html_score(rootDir,dstFile,data):
     html_list=get_html(rootDir)
-    data = dict
+    score = float
     if len(html_list):
 
         for file in html_list:
-            data=read_html(file,"Heaven11")
-            if data:
+            score=read_html(file)
+            if score:
                 break
         if data==None:
             print("There are no target values in file {}".format(html_list))
     else:
         print("There are no html files in path {}".format(rootDir))
 
-    return write2excel(dstFile, "sheet1", ["AC + NoHG", 'Furmark', data["Heaven11"]])
+    return write2excel(dstFile, "sheet1", [data[0], data[1], score])

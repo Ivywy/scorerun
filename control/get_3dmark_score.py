@@ -39,7 +39,6 @@ def read_xml(file_path,item):
     dom = ElementTree.parse(file_path)
     root = dom.getroot()
     result = root.findall(".//result/")
-    print(result)
     for element in result:
         if element.tag == item:
             data= element.text
@@ -95,4 +94,3 @@ def get_3dmark11_score(rootDir,dstFile,data):
     for file in fileList:
         log=extract_3dResult(file,os.path.join(rootDir,"3dmark11Result-{}.xml".format(common.get_time())))
         score = read_xml(log, "GraphicsScore")
-        print("111111111",score)

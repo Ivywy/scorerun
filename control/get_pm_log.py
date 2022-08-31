@@ -41,7 +41,6 @@ def csv2excel(csv_path,excel_path,mode):
         wb = copy(wb=rb)
         sheet=wb.add_sheet(mode[0])
         # write_excel_head(excel_path, mode[0], row_head)
-        # 设置字体加粗
         style = xlwt.easyxf('font: bold on')
         for index, title in enumerate(row_head):
             sheet.write(0, index + 1, title, style)
@@ -70,21 +69,20 @@ def csv2excel(csv_path,excel_path,mode):
     write_excel_xls_append(excel_path,mode[0],value_lis)
 
 def write_excel_head(path, sheet_name, row_head):
-    workbook = xlwt.Workbook()  # 新建一个工作簿
-    worksheet = workbook.add_sheet(sheet_name)  # 在工作簿中新建一个表格
-    # 设置字体加粗
+    workbook = xlwt.Workbook()
+    worksheet = workbook.add_sheet(sheet_name)
     style = xlwt.easyxf('font: bold on')
     for index, title in enumerate(row_head):
         worksheet.write(0, index+1, title,style)
     workbook.save(path)  # 保存工作簿
 
 def write_excel_xls_append(path, sheet_name,value):
-    index = len(value)  # 获取需要写入数据的行数
-    workbook = xlrd.open_workbook(path,formatting_info=True)  # 打开工作簿
-    sheets = workbook.sheet_names()  # 获取工作簿中的所有表格
+    index = len(value)
+    workbook = xlrd.open_workbook(path,formatting_info=True)
+    sheets = workbook.sheet_names()
     worksheet = workbook.sheet_by_name(sheet_name)
-    rows_old = worksheet.nrows  # 获取表格中已存在的数据的行数
-    new_workbook = copy(workbook)  # 将xlrd对象拷贝转化为xlwt对象
+    rows_old = worksheet.nrows
+    new_workbook = copy(workbook)
     new_worksheet = new_workbook.get_sheet(sheets.index(sheet_name))
     for i in range(0, index):
         for j in range(0, len(value[i])):
@@ -93,7 +91,7 @@ def write_excel_xls_append(path, sheet_name,value):
                 new_worksheet.write(i + rows_old, j, value[i][j],style)
             else:
                 new_worksheet.write(i + rows_old, j, value[i][j])
-    new_workbook.save(path)  # 保存工作簿
+    new_workbook.save(path) 
 
 
 

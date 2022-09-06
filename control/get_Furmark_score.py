@@ -8,8 +8,8 @@ def get_txt_score(inputpath,dstFile,data):
     with open(inputpath, "r") as f:
         line = f.readlines()
         for i in line:
-            score=re.findall("Score=\d+", i)    # ['Score=505']
+            score=re.findall("Score=\d+", i)
             for j in score:
-                li.append(re.findall(r"\d+\.?\d*",j))   # [['505']]
+                li.append(re.findall(r"\d+\.?\d*",j))
 
-    return write2excel(dstFile, "sheet1", [data[0], data[1], float(li[0][0])])
+    return write2excel(dstFile, "sheet1", [data[0], data[1], float(li[-1][0])])

@@ -51,9 +51,9 @@ def is_used(file_name):
 	app:运行的APP名字
 	mode:测试的不同模式
 '''
-def get_src_log(rootDir,dstPath,app,mode):
+def get_src_log(rootDir,app,mode):
 	continue_=False
-
+	dstPath = os.path.join("C:/Users/glve/Desktop", "share", mode+'-'+get_time())
 	fileList=os.listdir(rootDir)
 	if len(fileList)!=0:
 		# 判断不含old字符的文件数量
@@ -64,7 +64,7 @@ def get_src_log(rootDir,dstPath,app,mode):
 		elif len(seletedFiles)==1:
 			keywords="TimeSpy,Heaven11,Furmark,FireStrike"
 			if any([w in app and w for w in keywords.split(',')]): # 判断app是否包含这些关键字
-				dstPath=os.path.join(dstPath,mode+'-'+get_time())
+				# dstPath=os.path.join(dstPath,mode+'-'+get_time())
 				# copy log到指定目录
 				copyfile(seletedFiles[0],dstPath)
 				if os.path.exists(os.path.join(dstPath,seletedFiles[0])) == False:
@@ -78,7 +78,7 @@ def get_src_log(rootDir,dstPath,app,mode):
 			if app.__contains__("Heaven11"):
 				# TODO 判断文件是否符合要求需要在这里做吗
 
-				dstPath = os.path.join(dstPath, mode+'-'+get_time())
+				# dstPath = os.path.join(dstPath, mode+'-'+get_time())
 				for file in seletedFiles:
 					if read_html(file) != None:
 						# copy log到指定目录
@@ -103,8 +103,11 @@ def get_src_log(rootDir,dstPath,app,mode):
 
 	if continue_==False:
 		print("Please Rerun Testcase !")
+		return None
+	elif continue_ == True:
+		return dstPath
 		
-	return continue_
+
 
 
 def copyfile(srcfile,dstpath):

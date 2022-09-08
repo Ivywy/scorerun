@@ -1,5 +1,6 @@
 import argparse
 import os.path
+from pdb import runcall
 import sys
 
 from control.get_Furmark_score import get_txt_score
@@ -41,6 +42,20 @@ def get_score(src_log,pm_log):
     else:
         raise Exception("parameter error!")
 
+def collect_log(src_log,pm_log,dst_file,app,mode):
+    collected=common.get_src_log(src_log,app, mode)
+
+    if not collected:
+        raise Exception("pls run your app!")
+
+    if app == "Heaven11":
+        get_html_score(collected,dst_file,[mode,app])
+        csv2excel(pm_log, "", [app,mode])
+    elif app == "Furmark":
+        get_txt_score(collected,dst_file,[mode,app])
+    elif app in ["TimeSpy_Score","TimeSpy_FPS", "FireStrike"]:
+        get_3dmark_score(collected,dst_file,[mode,app])
+
 if __name__ == '__main__':
     """
     :param
@@ -49,6 +64,24 @@ if __name__ == '__main__':
         3.data (data[0] must in ["AC + HG", "DC + HG", "AC + NoHG", "DC + NoHG"]
                 data[1] must in [["TimeSpy_Score","TimeSpy_FPS", "Furmark", "Heaven11", "FireStrike","3dmark11"]])
     """
+    logDirDict={"TimeSpy_Score":"data", "TimeSpy_FPS":"data1", "Furmark":"data2", "Heaven11":"data2", "FireStrike":"data2","3dmark11":"data2"}
+    args_=_prepare_args()
+    mode = args_.mode
+    app = args_.application
+    if app == None:
+        for value in logDirDict.values:
+            collect_log(value, "","",app, mode)
+    elif len(app) == 1:
+        if app in logDirDict:
+            collect_log(logDirDict[app], "","",app, mode)
+    else:
+        for a in app:
+            if a in logDirDict:
+                collect_log(logDirDict[app], "","",app, mode)
+
+
+
+
     # dstFile=os.path.join("data","result_{}.xls".format(common.get_time()))
 
     # # 读取heaven11的log

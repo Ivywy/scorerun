@@ -2,6 +2,9 @@ import os
 import time
 import win32file as pywin32
 import shutil
+import re
+
+from bs4 import BeautifulSoup
 
 
 def mk_dir(path):

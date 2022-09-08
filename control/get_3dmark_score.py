@@ -9,15 +9,14 @@ from xml.etree import ElementTree
 
 from util.perf_to_excel import write2excel
 
-
 def get_3dmark(rootDir):
     allFiles = []
-    fileList = os.listdir(rootDir)  # 列出文件夹下所有的目录与文件
+    fileList = os.listdir(rootDir)
     for filename in fileList:
-        pathTmp = os.path.join(rootDir, filename)  # 获取path与filename组合后的路径
-        if os.path.isdir(pathTmp):  # 如果是目录
-            get_3dmark(pathTmp)  # 则递归查找
-        elif filename.endswith("3dmark-result") and "-0-" in filename:  # 如果不是目录，则比较后缀名
+        pathTmp = os.path.join(rootDir, filename)
+        if os.path.isdir(pathTmp):
+            get_3dmark(pathTmp)
+        elif filename.endswith("3dmark-result") and "-0-" in filename:
             allFiles.append(pathTmp)
     return allFiles
 

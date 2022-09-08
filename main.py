@@ -9,6 +9,11 @@ from control.get_3dmark_score import get_3dmark11_score
 from control.get_pm_log import csv2excel
 from util import common
 
+
+
+
+
+
 def _prepare_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-a","--application",help="application_mode;The value must in ['TimeSpy_Score','TimeSpy_FPS', 'Furmark', 'Heaven11', 'FireStrike','3dmark11']")
@@ -72,6 +77,7 @@ if __name__ == '__main__':
     # # csv_excel(csv_path,excel_path)
 
     # get_score()
+
 
 
 

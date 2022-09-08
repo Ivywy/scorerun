@@ -15,6 +15,24 @@ def mk_dir(path):
 def get_time():
     return time.strftime('%Y%m%d%H%M%S', time.localtime())
 
+# read file content
+def read_html(file_path):
+    doc = open(file_path, 'r', encoding='utf-8').read()
+    soup = BeautifulSoup(doc, "html.parser")
+    total=soup.findAll(text=re.compile('.*?Total.*?'))
+    if len(total):
+        s = ""
+        # dic = {}
+        for str in total:
+            if str.find("Total scores") != -1:
+                s = str.split("Total scores: ")[1]
+                break
+
+        return float(s)
+    else:
+        print("There are no keyword 'total' in file {}".format(file_path))
+        return
+
 def is_used(file_name):
 	try:
 		vHandle = pywin32.CreateFile(file_name, pywin32.GENERIC_READ, 0, None, pywin32.OPEN_EXISTING, pywin32.FILE_ATTRIBUTE_NORMAL, None)
@@ -27,54 +45,66 @@ def is_used(file_name):
 		except:
 			pass
 
+'''
+	rootDir:APP跑的日志存放路径
+	dstPath:收集日志路径
+	app:运行的APP名字
+	mode:测试的不同模式
+'''
 def get_src_log(rootDir,dstPath,app,mode):
+	continue_=False
+
 	fileList=os.listdir(rootDir)
-	flag=False
 	if len(fileList)!=0:
 		# 判断不含old字符的文件数量
-		fileNew=list(filter(lambda x: 'old' not in x, fileList))
-		print("fileNew,",fileNew)
-		if len(fileNew)==0:
-			flag=True
-		elif len(fileNew)==1:
+		seletedFiles=list(filter(lambda x: 'old' not in x, fileList))
+		print("file is not contained the 'old' string,",seletedFiles)
+		if len(seletedFiles)==0:
+			pass
+		elif len(seletedFiles)==1:
 			keywords="TimeSpy,Heaven11,Furmark,FireStrike"
 			if any([w in app and w for w in keywords.split(',')]): # 判断app是否包含这些关键字
-				dstPath=os.path.join(dstPath,mode)
+				dstPath=os.path.join(dstPath,mode+'-'+get_time())
 				# copy log到指定目录
-				copyfile(fileNew[0],dstPath)
-				if os.path.exists(os.path.join(dstPath,fileNew[0])) == False:
+				copyfile(seletedFiles[0],dstPath)
+				if os.path.exists(os.path.join(dstPath,seletedFiles[0])) == False:
 					raise Exception("File {fileNew[0]} copy Failed!")
+				continue_=True
 				# 将文件重新命名
-				oldFile=changeName(fileNew[0])
-				if os.path.exists(oldFile) ==False:
+				oldFile=changeName(seletedFiles[0])
+				if os.path.exists(oldFile) == False:
 					raise Exception("change file name failed!")
-		elif len(fileNew)==2:
+		elif len(seletedFiles)==2:
 			if app.__contains__("Heaven11"):
 				# TODO 判断文件是否符合要求需要在这里做吗
-				for file in fileNew:
-					dstPath = os.path.join(dstPath, mode)
-					# copy log到指定目录
-					copyfile(file, dstPath)
-					if os.path.exists(os.path.join(dstPath, file)) == False:
-						raise Exception(f"File {file} copy Failed!")
+
+				dstPath = os.path.join(dstPath, mode+'-'+get_time())
+				for file in seletedFiles:
+					if read_html(file) != None:
+						# copy log到指定目录
+						copyfile(file, dstPath)
+						if os.path.exists(os.path.join(dstPath, file)) == False:
+							raise Exception(f"File {file} copy Failed!")
+						continue_=True
+						break
+
+				for file in seletedFiles:
 					# 将文件重新命名
 					oldFile = changeName(file)
 					if os.path.exists(oldFile) == False:
 						raise Exception("change file name failed!")
+
 		else:
-			for file in fileNew:
+			for file in seletedFiles:
 				# 将文件重新命名
 				oldFile = changeName(file)
 				if os.path.exists(oldFile) == False:
 					raise Exception("change file name failed!")
-			flag=True
-	else:
-		flag=True
 
-	if flag==True:
+	if continue_==False:
 		print("Please Rerun Testcase !")
-		return
-
+		
+	return continue_
 
 
 def copyfile(srcfile,dstpath):

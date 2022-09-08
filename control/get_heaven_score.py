@@ -1,6 +1,7 @@
 import os
 import re
 from bs4 import BeautifulSoup
+from util import common
 
 from util.perf_to_excel import write2excel
 
@@ -16,23 +17,7 @@ def get_html(rootDir):
             allFiles.append(pathTmp)
     return allFiles
 
-# read file content
-def read_html(file_path):
-    doc = open(file_path, 'r', encoding='utf-8').read()
-    soup = BeautifulSoup(doc, "html.parser")
-    total=soup.findAll(text=re.compile('.*?Total.*?'))
-    if len(total):
-        s = ""
-        # dic = {}
-        for str in total:
-            if str.find("Total scores") != -1:
-                s = str.split("Total scores: ")[1]
-                break
 
-        return float(s)
-    else:
-        print("There are no keyword 'total' in file {}".format(file_path))
-        return
 
 # get score in html file
 def get_html_score(rootDir,dstFile,data):
@@ -41,7 +26,7 @@ def get_html_score(rootDir,dstFile,data):
     if len(html_list):
 
         for file in html_list:
-            score=read_html(file)
+            score=common.read_html(file)
             if score:
                 break
         if data==None:

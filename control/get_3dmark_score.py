@@ -43,7 +43,7 @@ def read_xml(file_path,item):
     result = root.findall(".//result/")
     for element in result:
         if element.tag == item:
-            data= element.text
+            data= float(element.text)
             find_it = True
             break
 
@@ -58,17 +58,28 @@ def get_3dmark_score(rootDir,dstFile,data):
     for file in fileList:
         if "TimeSpy" in file:
             timespy_log=extract_3dResult(file, os.path.join(rootDir,"3dmarkResult-{}.xml".format(common.get_time())))
-            if data[1]=="TimeSpy_Score" or data[1] == "TimeSpy_FPS":
-                score=read_xml(timespy_log,"TimeSpyExtremeCustomGraphicsScore")
+            # if data[1]=="TimeSpy_Score" or data[1] == "TimeSpy_FPS":
+            #     score=read_xml(timespy_log,"TimeSpyCustom3DMarkScore")
+            #     test1=read_xml(timespy_log,"TimeSpyCustomGraphicsTest1")
+            #     test2=read_xml(timespy_log,"TimeSpyCustomGraphicsTest2")
+            #     print(score, test1, test2)
+            #     if score != 0:
+            #         print(f"TimeSpy_Score={score}")
+            #     elif score == 0 & test1 == -1 & test2 !=0:
+            #         print(f"TimeSpy_FPS={test2}")
+            #     else:
+            #         print("Neither TimeSpy_Score and not TimeSpy_FPS")
+            if data[1] == "TimeSpy_Score":
+                score = read_xml(timespy_log, "TimeSpyCustom3DMarkScore")
+            elif data[1] == "TimeSpy_FPS":
+                scoreAll=read_xml(timespy_log,"TimeSpyCustom3DMarkScore")
                 test1=read_xml(timespy_log,"TimeSpyCustomGraphicsTest1")
                 test2=read_xml(timespy_log,"TimeSpyCustomGraphicsTest2")
-                print(score, test1, test2)
-                if score != 0:
-                    print("It is TimeSpy_Score")
-                elif score == 0 & test1 == -1 & test2 !=0:
-                    print("It is TimeSpy_FPS")
-                else:
-                    print("Neither TimeSpy_Score and nor TimeSpy_FPS")
+                # TODO 再验证test1=-1的情况
+                # if scoreAll == 0 and test1 == -1 and test2 != 0:
+                if scoreAll == 0 and test2 != 0:
+                    score=test2
+                    print(f"TimeSpy_FPS={score}")
         elif "FireStrike" in file:
                 if data[1] in file:
                     timespy_log=extract_3dResult(file, os.path.join(rootDir,"3dmarkResult-{}.xml".format(common.get_time())))
@@ -81,12 +92,12 @@ def get_3dmark_score(rootDir,dstFile,data):
 
 def get_3dmark11(rootDir):
     allFiles = []
-    fileList = os.listdir(rootDir)  # 列出文件夹下所有的目录与文件
+    fileList = os.listdir(rootDir)
     for filename in fileList:
-        pathTmp = os.path.join(rootDir, filename)  # 获取path与filename组合后的路径
-        if os.path.isdir(pathTmp):  # 如果是目录
-            get_3dmark(pathTmp)  # 则递归查找
-        elif filename.endswith("3dmark-11-result"):  # 如果不是目录，则比较后缀名
+        pathTmp = os.path.join(rootDir, filename)
+        if os.path.isdir(pathTmp):
+            get_3dmark(pathTmp)
+        elif filename.endswith("3dmark-11-result"):
             allFiles.append(pathTmp)
     return allFiles
 

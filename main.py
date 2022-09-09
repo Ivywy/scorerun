@@ -42,11 +42,14 @@ def get_score(src_log,pm_log):
     else:
         raise Exception("parameter error!")
 
-def collect_log(srcPathh,app,mode):
-    workPath=common.get_src_log(srcPathh,app, mode)
-    resultXls=os.path.join(workPath,"result.xls")
-    if not workPath:
-        raise Exception("pls run your app!")
+def collect_log(srcPath,app,mode):
+    workPath=common.get_src_log(srcPath,app, mode)
+    if workPath:
+        resultXls = os.path.join(workPath, "result.xls")
+    else:
+        # TODO when one app dosn't match the condition,The script should exit or skip the app?
+        print(f"There are not correct log in  {srcPath} .pls run your app!")
+        return
 
     if app == "Heaven11":
         get_html_score(workPath,resultXls,[mode,app])
@@ -69,16 +72,30 @@ if __name__ == '__main__':
     args_=_prepare_args()
     mode = args_.mode
     app = args_.application
-    if app == None:
+    appAll=["TimeSpy_Score","TimeSpy_FPS", "Furmark", "Heaven11", "FireStrike","3dmark11"]
+    modeAll=["AC+HG", "DC+HG", "AC+NoHG", "DC+NoHG"]
+    if mode not in modeAll:
+        raise Exception(f"parameter error!The mode should in {modeAll}")
+    if app:
+        appLis = app.split(",")
+        if not set(appLis).issubset(set(appAll)) :
+            raise Exception(f"parameter error! The app should in {appAll}")
+
+        if len(appLis) == 1:
+            print(f"Now only one app {appLis}")
+            if appLis[0] in logDirDict:
+                collect_log(logDirDict[appLis[0]], app, mode)
+        else:
+            for a in appLis:
+                if a in logDirDict:
+                    collect_log(logDirDict[a], a, mode)
+    # default:all application log will be collected.
+    else:
+        print("All app should be run!")
         for key in logDirDict.keys():
             collect_log(logDirDict[key],  key, mode)
-    elif len(app) == 1:
-        if app in logDirDict:
-            collect_log(logDirDict[app], app, mode)
-    else:
-        for a in app:
-            if a in logDirDict:
-                collect_log(logDirDict[a], a, mode)
+
+
 
 
 

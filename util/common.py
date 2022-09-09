@@ -3,7 +3,7 @@ import time
 import win32file as pywin32
 import shutil
 import re
-
+from pathlib import Path
 from bs4 import BeautifulSoup
 
 
@@ -19,7 +19,7 @@ def get_time():
     return time.strftime('%Y%m%d%H%M%S', time.localtime())
 
 # read file content
-def read_html(file_path):
+def read_heaven_log(file_path):
     doc = open(file_path, 'r', encoding='utf-8').read()
     soup = BeautifulSoup(doc, "html.parser")
     total=soup.findAll(text=re.compile('.*?Total.*?'))
@@ -34,7 +34,7 @@ def read_html(file_path):
         return float(s)
     else:
         print("There are no keyword 'total' in file {}".format(file_path))
-        return
+        return None
 
 def is_used(file_name):
 	try:
@@ -56,12 +56,16 @@ def is_used(file_name):
 '''
 def get_src_log(rootDir,app,mode):
 	continue_=False
-	dstPath = os.path.join("C:/Users/glve/Desktop", "share", mode+'-'+get_time())
-	fileList=os.listdir(rootDir)
+	dstPath = os.path.join(os.path.abspath(os.path.join(os.getcwd(),"..")), "share", mode+'-'+get_time())
+	# if not os.path.exists(dstPath):
+	# 	os.makedirs(dstPath)
+	# print("make new dir:",dstPath)
+	fileList=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith(('.3dmark-result','.html','.txt'))]
+	print(fileList)
 	if len(fileList)!=0:
 		# 判断不含old字符的文件数量
 		seletedFiles=list(filter(lambda x: 'old' not in x, fileList))
-		print("file is not contained the 'old' string,",seletedFiles)
+		print(f"{seletedFiles} not contained the 'old' ")
 		if len(seletedFiles)==0:
 			pass
 		elif len(seletedFiles)==1:
@@ -69,23 +73,24 @@ def get_src_log(rootDir,app,mode):
 			if any([w in app and w for w in keywords.split(',')]): # 判断app是否包含这些关键字
 				# dstPath=os.path.join(dstPath,mode+'-'+get_time())
 				# copy log到指定目录
-				copyfile(seletedFiles[0],dstPath)
+				print("+++",os.path.join(rootDir,seletedFiles[0]))
+				print("++++++++",dstPath)
+				copyfile(os.path.join(rootDir,seletedFiles[0]),dstPath)
 				if os.path.exists(os.path.join(dstPath,seletedFiles[0])) == False:
-					raise Exception("File {fileNew[0]} copy Failed!")
+					raise Exception(f"File {seletedFiles[0]} copy Failed!")
 				continue_=True
 				# 将文件重新命名
-				oldFile=changeName(seletedFiles[0])
+				oldFile=changeName(os.path.join(rootDir,seletedFiles[0]))
 				if os.path.exists(oldFile) == False:
 					raise Exception("change file name failed!")
 		elif len(seletedFiles)==2:
 			if app.__contains__("Heaven11"):
-				# TODO 判断文件是否符合要求需要在这里做吗
-
+				# 判断文件是否包含total关键字
 				# dstPath = os.path.join(dstPath, mode+'-'+get_time())
 				for file in seletedFiles:
-					if read_html(file) != None:
+					if read_heaven_log(os.path.join(rootDir, file)) != None:
 						# copy log到指定目录
-						copyfile(file, dstPath)
+						copyfile(os.path.join(rootDir,file), dstPath)
 						if os.path.exists(os.path.join(dstPath, file)) == False:
 							raise Exception(f"File {file} copy Failed!")
 						continue_=True
@@ -93,21 +98,21 @@ def get_src_log(rootDir,app,mode):
 
 				for file in seletedFiles:
 					# 将文件重新命名
-					oldFile = changeName(file)
+					oldFile = changeName(os.path.join(rootDir,file))
 					if os.path.exists(oldFile) == False:
 						raise Exception("change file name failed!")
 
 		else:
 			for file in seletedFiles:
 				# 将文件重新命名
-				oldFile = changeName(file)
+				oldFile = changeName(os.path.join(rootDir,file))
 				if os.path.exists(oldFile) == False:
 					raise Exception("change file name failed!")
 
 	if continue_==False:
 		print("Please Rerun Testcase !")
 		return None
-	elif continue_ == True:
+	else:
 		return dstPath
 		
 
@@ -120,13 +125,13 @@ def copyfile(srcfile,dstpath):
 		fpath,fname=os.path.split(srcfile)
 		if not os.path.exists(dstpath):
 			os.makedirs(dstpath)
-		shutil.copy(srcfile, dstpath + fname)
-		print ("copy %s -> %s"%(srcfile, dstpath + fname))
+		shutil.copy(srcfile, dstpath)
+		print ("copy %s -> %s"%(srcfile, os.path.join(dstpath,srcfile)))
 
 
 def changeName(beforeFile):
 	index = beforeFile.find('.')
-	finalFile = beforeFile[:index] + '_old ' + beforeFile[index:]
+	finalFile = beforeFile[:index] + '_old' + beforeFile[index:]
 	print(finalFile)
 	os.rename(beforeFile,finalFile)
 	return finalFile

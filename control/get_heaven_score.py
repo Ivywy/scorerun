@@ -9,12 +9,12 @@ from util.perf_to_excel import write2excel
 def get_heaven_log(rootDir):
     # allFiles=[]
     fileList = os.listdir(rootDir)
-    print(fileList,"----------")
+    #print(fileList,"----------")
     for filename in fileList:
         pathTmp = os.path.join(rootDir, filename)
         if os.path.isdir(pathTmp):
             get_heaven_log(pathTmp)
-        elif filename.endswith("html") and filename.__contains__("heaven"):
+        elif filename.endswith("html") and (filename.__contains__("heaven") or filename.__contains__("Heaven")):
             print("1111111",filename)
             # allFiles.append(pathTmp)
             return os.path.join(rootDir,filename)

@@ -20,6 +20,7 @@ def get_time():
 
 # read file content
 def read_heaven_log(file_path):
+    print(file_path)
     doc = open(file_path, 'r', encoding='utf-8').read()
     soup = BeautifulSoup(doc, "html.parser")
     total=soup.findAll(text=re.compile('.*?Total.*?'))
@@ -61,11 +62,11 @@ def get_src_log(rootDir,app,mode):
 	# 	os.makedirs(dstPath)
 	# print("make new dir:",dstPath)
 	fileList=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith(('.3dmark-result','.html','.txt'))]
-	print(fileList)
+	# print(fileList)
 	if len(fileList)!=0:
 		# 判断不含old字符的文件数量
 		seletedFiles=list(filter(lambda x: 'old' not in x, fileList))
-		print(f"{seletedFiles} not contained the 'old' ")
+		#print(f"{seletedFiles} not contained the 'old' ")
 		if len(seletedFiles)==0:
 			pass
 		elif len(seletedFiles)==1:
@@ -110,7 +111,7 @@ def get_src_log(rootDir,app,mode):
 					raise Exception("change file name failed!")
 
 	if continue_==False:
-		print("Please Rerun Testcase !")
+		#print("Please Rerun Testcase !")
 		return None
 	else:
 		return dstPath

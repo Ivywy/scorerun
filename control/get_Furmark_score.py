@@ -14,8 +14,14 @@ def get_furmark_log(rootDir):
     # return allFiles
 def get_txt_score(rootDir,dstFile,data):
     # TODO posite FurMark log
-    furmarkLog=get_furmark_log(rootDir)
     li = list()
+
+    furmarkLog=os.path.join(rootDir, get_furmark_log(rootDir))
+
+    if not os.path.isfile(furmarkLog):
+        print("input file is not exists")
+        return
+
     with open(furmarkLog, "r") as f:
         line = f.readlines()
         for i in line:

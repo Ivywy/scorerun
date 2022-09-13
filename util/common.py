@@ -81,7 +81,7 @@ def get_src_log(rootDir,dstPath,app):
 		# 判断不含old字符的文件数量
 		seletedFiles=list(filter(lambda x: 'old' not in x, fileList))
 		# 当有不含old字的文件存在且只含有1个或2个时，进入判断：
-		if len(seletedFiles) > 0 and len(seletedFiles) < 3:
+		if len(seletedFiles) == 1 or len(seletedFiles) == 2:
 			generateFiles = []
 			for file in seletedFiles:
 				if file.__contains__(keyword):
@@ -122,18 +122,7 @@ def get_src_log(rootDir,dstPath,app):
 					raise Exception("change file name failed!")
 
 	if continue_==False:
-		print(f"No matched logs were found of {app},please press enter to continue or esc to exit")
-		while True:
-			try:
-				if keyboard.is_pressed('ENTER'):
-					print("you pressed Enter, so continue collecting next app log...")
-					break
-				if keyboard.is_pressed('Esc'):
-					print("you pressed Esc, so exiting...")
-					sys.exit(0)
-			except:
-				break
-		
+		print("\033[0;31;40m", "No matched logs were found of {app},please press enter to continue or esc to exit", "\033[0m")
 
 
 

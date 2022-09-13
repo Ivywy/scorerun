@@ -54,6 +54,7 @@ def read_xml(file_path,item):
 
 def get_3dmark_score(rootDir,dstFile,data):
     fileList=get_3dmark(rootDir)
+    print(fileList)
     score, test1, test2=float(),float(),float()
     for file in fileList:
         if "TimeSpy" in file:

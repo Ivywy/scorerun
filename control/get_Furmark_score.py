@@ -16,7 +16,12 @@ def get_txt_score(rootDir,dstFile,data):
     # TODO posite FurMark log
     li = list()
 
-    furmarkLog=os.path.join(rootDir, get_furmark_log(rootDir))
+    fmLogFile = get_furmark_log(rootDir)
+    if fmLogFile == None:
+        print("no furmark log file")
+        return
+
+    furmarkLog=os.path.join(rootDir, fmLogFile)
 
     if not os.path.isfile(furmarkLog):
         print("input file is not exists")

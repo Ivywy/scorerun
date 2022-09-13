@@ -86,6 +86,9 @@ if __name__ == '__main__':
     appAll=["TimeSpy", "FurMark", "Heaven11", "FireStrike","3dmark11"]
     modeAll=["AC+HG", "DC+HG", "AC+NoHG", "DC+NoHG"]
     dstPath = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), "tmp", mode + '-' + common.get_time())
+    if not os.path.exists(dstPath):
+        os.mkdir(dstPath)
+
     if mode not in modeAll:
         raise Exception(f"parameter error!The mode should in {modeAll}")
 

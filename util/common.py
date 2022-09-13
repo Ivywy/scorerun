@@ -90,11 +90,11 @@ def get_src_log(rootDir,dstPath,app):
 			# 与app相匹配的log只有一个时，符合提取要求
 			if len(generateFiles)==1:
 				# copy log到指定目录
-				copyfile(os.path.join(rootDir, seletedFiles[0]), dstPath)
-				if os.path.exists(os.path.join(dstPath, seletedFiles[0])) == False:
-					raise Exception(f"File {seletedFiles[0]} copy Failed!")
+				copyfile(os.path.join(rootDir, generateFiles[0]), dstPath)
+				if os.path.exists(os.path.join(dstPath, generateFiles[0])) == False:
+					raise Exception(f"File {generateFiles[0]} copy Failed!")
 				continue_ = True
-				oldFile = changeName(os.path.join(rootDir, seletedFiles[0]))
+				oldFile = changeName(os.path.join(rootDir, generateFiles[0]))
 				if os.path.exists(oldFile) == False:
 					raise Exception("change file name failed!")
 
@@ -140,5 +140,7 @@ def copyfile(srcfile,dstpath):
 def changeName(beforeFile):
 	index = beforeFile.find('.')
 	finalFile = beforeFile[:index] + '_old' + beforeFile[index:]
+	if os.path.isfile(finalFile):
+		os.remove(finalFile)
 	os.rename(beforeFile,finalFile)
 	return finalFile

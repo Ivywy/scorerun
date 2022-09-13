@@ -3,3 +3,4 @@ xlwt
 BeautifulSoup4
 xlutils
 pywin32
+keyboard

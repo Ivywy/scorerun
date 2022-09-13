@@ -1,10 +1,12 @@
 import os
+import sys
 import time
 import win32file as pywin32
 import shutil
 import re
 from pathlib import Path
 from bs4 import BeautifulSoup
+import keyboard
 
 
 def mk_dir(path):
@@ -55,6 +57,12 @@ def is_used(file_name):
 	app:运行的APP名字
 	mode:测试的不同模式
 '''
+
+def get_key(app):
+	if "TimeSpy" in app:
+		return "TimeSpy"
+	else:
+		return app
 def get_src_log(rootDir,dstPath,app):
 	'''
 	:param rootDir: Log path where generated directory
@@ -63,63 +71,68 @@ def get_src_log(rootDir,dstPath,app):
 	:return:
 	'''
 	continue_=False
-	# if not os.path.exists(dstPath):
-	# 	os.makedirs(dstPath)
-	# print("make new dir:",dstPath)
+	# 找到不含old关键字的文件
 	fileList=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith(('.3dmark-result','.html','.txt'))]
-	# print(fileList)
+
+	# 获取每个app生成的log中含有的可唯一识别该app的关键字
+	keyword=get_key(app)
+
 	if len(fileList)!=0:
 		# 判断不含old字符的文件数量
 		seletedFiles=list(filter(lambda x: 'old' not in x, fileList))
-		#print(f"{seletedFiles} not contained the 'old' ")
-		if len(seletedFiles)==0:
-			pass
-		elif len(seletedFiles)==1:
-			keywords="TimeSpy,Heaven11,Furmark,FireStrike"
-			if any([w in app and w for w in keywords.split(',')]): # 判断app是否包含这些关键字
-				# dstPath=os.path.join(dstPath,mode+'-'+get_time())
+		# 当有不含old字的文件存在且只含有1个或2个时，进入判断：
+		if len(seletedFiles) > 0 and len(seletedFiles) < 3:
+			generateFiles = []
+			for file in seletedFiles:
+				if file.__contains__(keyword):
+					generateFiles.append(file)
+
+			# 与app相匹配的log只有一个时，符合提取要求
+			if len(generateFiles)==1:
 				# copy log到指定目录
-				print("+++",os.path.join(rootDir,seletedFiles[0]))
-				print("++++++++",dstPath)
-				copyfile(os.path.join(rootDir,seletedFiles[0]),dstPath)
-				if os.path.exists(os.path.join(dstPath,seletedFiles[0])) == False:
+				copyfile(os.path.join(rootDir, seletedFiles[0]), dstPath)
+				if os.path.exists(os.path.join(dstPath, seletedFiles[0])) == False:
 					raise Exception(f"File {seletedFiles[0]} copy Failed!")
-				continue_=True
-				# 将文件重新命名
-				oldFile=changeName(os.path.join(rootDir,seletedFiles[0]))
+				continue_ = True
+				oldFile = changeName(os.path.join(rootDir, seletedFiles[0]))
 				if os.path.exists(oldFile) == False:
 					raise Exception("change file name failed!")
-		elif len(seletedFiles)==2:
-			if app.__contains__("Heaven11"):
-				# 判断文件是否包含total关键字
-				# dstPath = os.path.join(dstPath, mode+'-'+get_time())
-				for file in seletedFiles:
-					if read_heaven_log(os.path.join(rootDir, file)) != None:
-						# copy log到指定目录
-						copyfile(os.path.join(rootDir,file), dstPath)
-						if os.path.exists(os.path.join(dstPath, file)) == False:
-							raise Exception(f"File {file} copy Failed!")
-						continue_=True
-						break
 
-				for file in seletedFiles:
-					# 将文件重新命名
-					oldFile = changeName(os.path.join(rootDir,file))
-					if os.path.exists(oldFile) == False:
-						raise Exception("change file name failed!")
-
+			# 当 app为Heaven11时，有可能会生成两个log，只取内容含有total score的那个log即可
+			elif len(generateFiles)==2:
+				if keyword == "Heaven11":
+						# 判断文件是否包含total关键字
+						for file in generateFiles:
+							if read_heaven_log(os.path.join(rootDir, file)) != None:
+								# copy log到指定目录
+								copyfile(os.path.join(rootDir, file), dstPath)
+								if os.path.exists(os.path.join(dstPath, file)) == False:
+									raise Exception(f"File {file} copy Failed!")
+								continue_ = True
+								break
+						for file in generateFiles:
+							oldFile = changeName(os.path.join(rootDir, file))
+							if os.path.exists(oldFile) == False:
+								raise Exception("change file name failed!")
 		else:
+			# 将文件重新命名
 			for file in seletedFiles:
-				# 将文件重新命名
-				oldFile = changeName(os.path.join(rootDir,file))
+				oldFile = changeName(os.path.join(rootDir, file))
 				if os.path.exists(oldFile) == False:
 					raise Exception("change file name failed!")
 
 	if continue_==False:
-		#print("Please Rerun Testcase !")
-		return None
-	else:
-		return dstPath
+		print(f"No matched logs were found of {app},please press enter to continue or esc to exit")
+		while True:
+			try:
+				if keyboard.is_pressed('ENTER'):
+					print("you pressed Enter, so continue collecting next app log...")
+					break
+				if keyboard.is_pressed('Esc'):
+					print("you pressed Esc, so exiting...")
+					sys.exit(0)
+			except:
+				break
 		
 
 
@@ -138,6 +151,5 @@ def copyfile(srcfile,dstpath):
 def changeName(beforeFile):
 	index = beforeFile.find('.')
 	finalFile = beforeFile[:index] + '_old' + beforeFile[index:]
-	print(finalFile)
 	os.rename(beforeFile,finalFile)
 	return finalFile

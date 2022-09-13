@@ -42,30 +42,29 @@ def get_score(src_log,pm_log):
     else:
         raise Exception("parameter error!")
 
-def collect_log(srcPath,app,mode):
+def collect_log(srcPath,workPath,app,mode):
     '''
     :param srcPath:
     :param app:
     :param mode:
     :return:
     '''
-    workPath = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), "tmp", mode + '-' + common.get_time())
-    workPath=common.get_src_log(srcPath,workPath,app)
+    print(f"!!!Begin collect {app} log")
+    common.get_src_log(srcPath,workPath,app)
     if workPath:
         resultXls = os.path.join(workPath, "result.xls")
     else:
         # TODO when one app dosn't match the condition,The script should exit or skip the app?
         print(f"There are not correct log in  {srcPath} .please run your app!")
         return
-
     if app == "Heaven11":
         get_html_score(workPath,resultXls,[mode,app])
         # csv2excel(pm_log, "", [app,mode])
         print("数据生成在", resultXls)
-    elif app == "Furmark":
+    elif app == "FurMark":
         get_txt_score(workPath,resultXls,[mode,app])
         print("数据生成在", resultXls)
-    elif app in ["TimeSpy_Score","TimeSpy_FPS", "FireStrike"]:
+    elif app in ["TimeSpy","TimeSpy_FPS", "FireStrike"]:
         get_3dmark_score(workPath,resultXls,[mode,app])
         print("数据生成在", resultXls)
 
@@ -75,15 +74,16 @@ if __name__ == '__main__':
         1.log path
         2. destination excel file path
         3.data (data[0] must in ["AC + HG", "DC + HG", "AC + NoHG", "DC + NoHG"]
-                data[1] must in [["TimeSpy_Score","TimeSpy_FPS", "Furmark", "Heaven11", "FireStrike","3dmark11"]])
+                data[1] must in [["TimeSpy","TimeSpy_FPS", "FurMark", "Heaven11", "FireStrike","3dmark11"]])
     """
     markPath=r"C:\Users\gvle\Documents\3DMark"
-    logDirDict={"TimeSpy_Score":markPath, "TimeSpy_FPS":markPath, "Furmark":r"C:\Users\gvle\scorerun\data\Furmark", "Heaven11":r"C:\Users\gvle\Heaven", "FireStrike":markPath,"3dmark11":r"C:\Users\gvle\Documents\3DMark 11"}
+    logDirDict={"TimeSpy":markPath,"TimeSpy_FPS":markPath,"FurMark":r"C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark","Heaven11":r"C:\Users\gvle\Heaven","FireStrike":markPath}
     args_=_prepare_args()
     mode = args_.mode
     app = args_.application
-    appAll=["TimeSpy_Score","TimeSpy_FPS", "Furmark", "Heaven11", "FireStrike","3dmark11"]
+    appAll=["TimeSpy","TimeSpy_FPS", "FurMark", "Heaven11", "FireStrike","3dmark11"]
     modeAll=["AC+HG", "DC+HG", "AC+NoHG", "DC+NoHG"]
+    dstPath = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), "tmp", mode + '-' + common.get_time())
     if mode not in modeAll:
         raise Exception(f"parameter error!The mode should in {modeAll}")
 
@@ -91,27 +91,15 @@ if __name__ == '__main__':
         appLis = app.split(",")
         if not set(appLis).issubset(set(appAll)) :
             raise Exception(f"parameter error! The app should in {appAll}")
-
-        if len(appLis) == 1:
-            print(f"Now only one app {appLis}")
-            if appLis[0] in logDirDict:
-                collect_log(logDirDict[appLis[0]], app, mode)
         else:
             for a in appLis:
                 if a in logDirDict:
-                    collect_log(logDirDict[a], a, mode)
+                    collect_log(logDirDict[a],dstPath, a, mode)
     # default:all application log will be collected.
     else:
         print("run all app!")
         for key in logDirDict.keys():
-            collect_log(logDirDict[key],  key, mode)
-
-    # get pmlog
-
-
-
-
-
+            collect_log(logDirDict[key],dstPath,key, mode)
 
 
     # dstFile=os.path.join("data","result_{}.xls".format(common.get_time()))

@@ -20,7 +20,7 @@ def csv2excel(csv_path,excel_path,mode):
     if not excel_path.endswith(".xls"):
         raise Exception(IOError)
 
-    if mode[0] not in ["TimeSpy_Score","TimeSpy_FPS","Furmark","Heaven11","FireStrike","3dmark11"]:
+    if mode[0] not in ["TimeSpy","TimeSpy_FPS","Furmark","Heaven11","FireStrike","3dmark11"]:
         raise Exception('arg error!! mode[0] must in ["TimeSpy_Score","TimeSpy_FPS","Furmark","Heaven11","FireStrike","3dmark11"] ')
     if mode[1] not in ["AC + HG","DC + HG","AC + NoHG","DC + NoHG"]:
         raise Exception('arg error!! mode[1] must in ["AC + HG","DC + HG","AC + NoHG","DC + NoHG"]')

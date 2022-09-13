@@ -16,7 +16,7 @@ def get_3dmark(rootDir):
         pathTmp = os.path.join(rootDir, filename)
         if os.path.isdir(pathTmp):
             get_3dmark(pathTmp)
-        elif filename.endswith("3dmark-result") and "-0-" in filename:
+        elif filename.endswith("3dmark-result") and "-FAILED-" not in filename:
             allFiles.append(pathTmp)
     return allFiles
 
@@ -79,7 +79,7 @@ def get_3dmark_score(rootDir,dstFile,data):
                 # if scoreAll == 0 and test1 == -1 and test2 != 0:
                 if scoreAll == 0 and test2 != 0:
                     score=test2
-                    print(f"TimeSpy_FPS={score}")
+                    # print(f"TimeSpy_FPS={score}")
         elif "FireStrike" in file:
                 if data[1] in file:
                     timespy_log=extract_3dResult(file, os.path.join(rootDir,"3dmarkResult-{}.xml".format(common.get_time())))

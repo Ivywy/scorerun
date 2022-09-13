@@ -38,11 +38,11 @@ def write2excel(fileName,sheetName,data):
     if not fileName.endswith(".xls"):
         raise Exception("destination file should end with xls")
     row_head = ["AC+HG", "DC+HG", "AC+NoHG", "DC+NoHG"]
-    column_head = ["TimeSpy_Score","TimeSpy_FPS", "Furmark", "Heaven11", "FireStrike","3dmark11"]
+    column_head = ["TimeSpy","TimeSpy_FPS", "FurMark", "Heaven11", "FireStrike","3dmark11"]
 
     # Check whether data[0] and data[1] are in row_head and column_head
-    if data[0] not in row_head or data[1] not in column_head:
-        raise Exception(f"data error! {data[0]} should in {row_head} and {data[1]} should in {column_head}")
+    # if data[0] not in row_head or data[1] not in column_head:
+    #     raise Exception(f"data error! {data[0]} should in {row_head} and {data[1]} should in {column_head}")
 
     # Check if the xls file exists, if not, create a new one
     if not os.path.exists(fileName):

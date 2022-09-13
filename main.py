@@ -19,6 +19,7 @@ def _prepare_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-a","--application",help="application_mode;The value must in ['TimeSpy_Score','TimeSpy_FPS', 'Furmark', 'Heaven11', 'FireStrike','3dmark11']")
     parser.add_argument("-m","--mode",help="config_mode;he value must in ['AC + HG', 'DC + HG', 'AC + NoHG', 'DC + NoHG']")
+    parser.add_argument("-fps",action='store_true',help="run TimeSpy_FPS but not TimeSpy")
     return parser.parse_args()
 
 def get_score(src_log,pm_log):
@@ -74,14 +75,15 @@ if __name__ == '__main__':
         1.log path
         2. destination excel file path
         3.data (data[0] must in ["AC + HG", "DC + HG", "AC + NoHG", "DC + NoHG"]
-                data[1] must in [["TimeSpy","TimeSpy_FPS", "FurMark", "Heaven11", "FireStrike","3dmark11"]])
+                data[1] must in [["TimeSpy", "FurMark", "Heaven11", "FireStrike","3dmark11"]])
     """
     markPath=r"C:\Users\gvle\Documents\3DMark"
-    logDirDict={"TimeSpy":markPath,"TimeSpy_FPS":markPath,"FurMark":r"C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark","Heaven11":r"C:\Users\gvle\Heaven","FireStrike":markPath}
+    logDirDict={"TimeSpy":markPath,"FurMark":r"C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark","Heaven11":r"C:\Users\gvle\Heaven","FireStrike":markPath}
+    logDirDictFps={"TimeSpy_FPS":markPath,"FurMark":r"C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark","Heaven11":r"C:\Users\gvle\Heaven","FireStrike":markPath}
     args_=_prepare_args()
     mode = args_.mode
     app = args_.application
-    appAll=["TimeSpy","TimeSpy_FPS", "FurMark", "Heaven11", "FireStrike","3dmark11"]
+    appAll=["TimeSpy", "FurMark", "Heaven11", "FireStrike","3dmark11"]
     modeAll=["AC+HG", "DC+HG", "AC+NoHG", "DC+NoHG"]
     dstPath = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), "tmp", mode + '-' + common.get_time())
     if mode not in modeAll:
@@ -98,8 +100,12 @@ if __name__ == '__main__':
     # default:all application log will be collected.
     else:
         print("run all app!")
-        for key in logDirDict.keys():
-            collect_log(logDirDict[key],dstPath,key, mode)
+        if (args_.fps):
+            for key in logDirDictFps.keys():
+                collect_log(logDirDictFps[key],dstPath,key, mode)
+        else:
+            for key in logDirDict.keys():
+                collect_log(logDirDict[key],dstPath,key, mode)
 
 
     # dstFile=os.path.join("data","result_{}.xls".format(common.get_time()))

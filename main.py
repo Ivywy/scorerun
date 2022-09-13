@@ -43,7 +43,14 @@ def get_score(src_log,pm_log):
         raise Exception("parameter error!")
 
 def collect_log(srcPath,app,mode):
-    workPath=common.get_src_log(srcPath,app, mode)
+    '''
+    :param srcPath:
+    :param app:
+    :param mode:
+    :return:
+    '''
+    workPath = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), "tmp", mode + '-' + common.get_time())
+    workPath=common.get_src_log(srcPath,workPath,app)
     if workPath:
         resultXls = os.path.join(workPath, "result.xls")
     else:
@@ -79,6 +86,7 @@ if __name__ == '__main__':
     modeAll=["AC+HG", "DC+HG", "AC+NoHG", "DC+NoHG"]
     if mode not in modeAll:
         raise Exception(f"parameter error!The mode should in {modeAll}")
+
     if app:
         appLis = app.split(",")
         if not set(appLis).issubset(set(appAll)) :
@@ -94,9 +102,12 @@ if __name__ == '__main__':
                     collect_log(logDirDict[a], a, mode)
     # default:all application log will be collected.
     else:
-        print("All app should be run!")
+        print("run all app!")
         for key in logDirDict.keys():
             collect_log(logDirDict[key],  key, mode)
+
+    # get pmlog
+
 
 
 

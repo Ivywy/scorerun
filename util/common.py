@@ -55,9 +55,14 @@ def is_used(file_name):
 	app:运行的APP名字
 	mode:测试的不同模式
 '''
-def get_src_log(rootDir,app,mode):
+def get_src_log(rootDir,dstPath,app):
+	'''
+	:param rootDir: Log path where generated directory
+	:param dstPath: The destination path from the rootDir copy
+	:param app:application
+	:return:
+	'''
 	continue_=False
-	dstPath = os.path.join(os.path.abspath(os.path.join(os.getcwd(),"..")), "share", mode+'-'+get_time())
 	# if not os.path.exists(dstPath):
 	# 	os.makedirs(dstPath)
 	# print("make new dir:",dstPath)

@@ -67,12 +67,6 @@ def write2excel(fileName,sheetName,data):
     worksheet.write(pos[0],pos[1],data[2])
     workbook.save(fileName)
 
-    # TODO 读取excel数据
-    # if data[2]==read4excel(fileName,sheetName,pos[0],pos[1]):
-    #     print("data write to excel success!!")
-    # else:
-    #     raise Exception("Write data failed!")
-
 def read4excel(fileName,sheet,row,col):
     wb = xlrd.open_workbook(fileName, formatting_info=True)
     worksheet=wb.get_sheet(sheet)

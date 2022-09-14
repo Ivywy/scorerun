@@ -39,28 +39,12 @@ def read_heaven_log(file_path):
         print("There are no keyword 'total' in file {}".format(file_path))
         return None
 
-def is_used(file_name):
-	try:
-		vHandle = pywin32.CreateFile(file_name, pywin32.GENERIC_READ, 0, None, pywin32.OPEN_EXISTING, pywin32.FILE_ATTRIBUTE_NORMAL, None)
-		return int(vHandle) == pywin32.INVALID_HANDLE_VALUE
-	except:
-		return True
-	finally:
-		try:
-			pywin32.CloseHandle(vHandle)
-		except:
-			pass
-
-'''
-	rootDir:APP跑的日志存放路径
-	dstPath:收集日志路径
-	app:运行的APP名字
-	mode:测试的不同模式
-'''
 
 def get_key(app):
 	if "TimeSpy" in app:
 		return "TimeSpy"
+	elif "Heaven" in app:
+		return "heaven"
 	else:
 		return app
 def get_src_log(rootDir,dstPath,app):
@@ -94,13 +78,11 @@ def get_src_log(rootDir,dstPath,app):
 				if os.path.exists(os.path.join(dstPath, generateFiles[0])) == False:
 					raise Exception(f"File {generateFiles[0]} copy Failed!")
 				continue_ = True
-				oldFile = changeName(os.path.join(rootDir, generateFiles[0]))
-				if os.path.exists(oldFile) == False:
-					raise Exception("change file name failed!")
+				changeName(os.path.join(rootDir, generateFiles[0]))
 
 			# 当 app为Heaven11时，有可能会生成两个log，只取内容含有total score的那个log即可
 			elif len(generateFiles)==2:
-				if keyword == "Heaven11":
+				if keyword == "Heaven":
 						# 判断文件是否包含total关键字
 						for file in generateFiles:
 							if read_heaven_log(os.path.join(rootDir, file)) != None:
@@ -111,15 +93,13 @@ def get_src_log(rootDir,dstPath,app):
 								continue_ = True
 								break
 						for file in generateFiles:
-							oldFile = changeName(os.path.join(rootDir, file))
-							if os.path.exists(oldFile) == False:
-								raise Exception("change file name failed!")
+							changeName(os.path.join(rootDir, file))
+
 		else:
 			# 将文件重新命名
 			for file in seletedFiles:
-				oldFile = changeName(os.path.join(rootDir, file))
-				if os.path.exists(oldFile) == False:
-					raise Exception("change file name failed!")
+				changeName(os.path.join(rootDir, file))
+
 
 	if continue_==False:
 		print("\033[0;31;40m", "No matched logs were found of {app},please press enter to continue or esc to exit", "\033[0m")
@@ -134,8 +114,8 @@ def copyfile(srcfile,dstpath):
 		if not os.path.exists(dstpath):
 			os.makedirs(dstpath)
 		shutil.copy(srcfile, dstpath)
-		print ("copy %s -> %s"%(srcfile, os.path.join(dstpath,srcfile)))
-
+		print ("copy %s -> %s"%(srcfile, os.path.join(dstpath,fname)))
+		return os.path.join(dstpath,fname)
 
 def changeName(beforeFile):
 	index = beforeFile.find('.')
@@ -143,4 +123,14 @@ def changeName(beforeFile):
 	if os.path.isfile(finalFile):
 		os.remove(finalFile)
 	os.rename(beforeFile,finalFile)
-	return finalFile
+	if os.path.exists(finalFile) == False:
+		raise Exception("change file name failed!")
+
+def seek_file(rootDir,dstPath,file):
+	for root, dirs, files in os.walk(rootDir):
+		if file in files:
+			filePath='{0}/{1}'.format(root, file)
+			finalPath=copyfile(filePath,dstPath)
+			changeName(filePath)
+			return finalPath
+

@@ -14,7 +14,7 @@ def get_heaven_log(rootDir):
         pathTmp = os.path.join(rootDir, filename)
         if os.path.isdir(pathTmp):
             get_heaven_log(pathTmp)
-        elif filename.endswith("html") and (filename.__contains__("heaven") or filename.__contains__("Heaven")):
+        elif filename.endswith("html") and filename.__contains__("heaven"):
             print("1111111",filename)
             # allFiles.append(pathTmp)
             return os.path.join(rootDir,filename)

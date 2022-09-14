@@ -59,17 +59,6 @@ def get_3dmark_score(rootDir,dstFile,data):
     for file in fileList:
         if "TimeSpy" in file:
             timespy_log=extract_3dResult(file, os.path.join(rootDir,"3dmarkResult-{}.xml".format(common.get_time())))
-            # if data[1]=="TimeSpy_Score" or data[1] == "TimeSpy_FPS":
-            #     score=read_xml(timespy_log,"TimeSpyCustom3DMarkScore")
-            #     test1=read_xml(timespy_log,"TimeSpyCustomGraphicsTest1")
-            #     test2=read_xml(timespy_log,"TimeSpyCustomGraphicsTest2")
-            #     print(score, test1, test2)
-            #     if score != 0:
-            #         print(f"TimeSpy_Score={score}")
-            #     elif score == 0 & test1 == -1 & test2 !=0:
-            #         print(f"TimeSpy_FPS={test2}")
-            #     else:
-            #         print("Neither TimeSpy_Score and not TimeSpy_FPS")
             if data[1] == "TimeSpy_Score":
                 score = read_xml(timespy_log, "TimeSpyCustom3DMarkScore")
             elif data[1] == "TimeSpy_FPS":
@@ -80,7 +69,6 @@ def get_3dmark_score(rootDir,dstFile,data):
                 # if scoreAll == 0 and test1 == -1 and test2 != 0:
                 if scoreAll == 0 and test2 != 0:
                     score=test2
-                    # print(f"TimeSpy_FPS={score}")
         elif "FireStrike" in file:
                 if data[1] in file:
                     timespy_log=extract_3dResult(file, os.path.join(rootDir,"3dmarkResult-{}.xml".format(common.get_time())))

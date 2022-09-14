@@ -27,13 +27,21 @@ def collect_log(srcPath,workPath,app,mode):
     :return:
     '''
     print(f"!!!Begin collect {app} log")
-    common.get_src_log(srcPath,workPath,app)
+
+    if not os.path.exists(srcPath):
+        os.makedirs(srcPath)
+        print(srcPath,"is not exist, maybe you run a error env")
+        raise Exception(f"{srcPath} is not exist, maybe you run a error env")
+
     if workPath:
         resultXls = os.path.join(workPath, "result.xls")
     else:
         # TODO when one app dosn't match the condition,The script should exit or skip the app?
         print(f"There are not correct log in  {srcPath} .please run your app!")
         return
+
+    common.get_src_log(srcPath,workPath,app)
+
     if app == "Heaven":
         get_html_score(workPath,resultXls,[mode,app])
         # csv2excel(pm_log, "", [app,mode])
@@ -62,37 +70,37 @@ if __name__ == '__main__':
     app = args_.application
     appAll=["TimeSpy", "FurMark", "Heaven", "FireStrike","3dmark11"]
     modeAll=["AC+HG", "DC+HG", "AC+NoHG", "DC+NoHG"]
-    # dstPath = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), "tmp", mode + '-' + common.get_time())
-    # if not os.path.exists(dstPath):
-    #     os.mkdir(dstPath)
-    #
-    # if mode not in modeAll:
-    #     raise Exception(f"parameter error!The mode should in {modeAll}")
-    #
-    # if app:
-    #     appLis = app.split(",")
-    #     if not set(appLis).issubset(set(appAll)) :
-    #         raise Exception(f"parameter error! The app should in {appAll}")
-    #     else:
-    #         for a in appLis:
-    #             if a in logDirDict:
-    #                 collect_log(logDirDict[a],dstPath, a, mode)
-    # # default:all application log will be collected.
-    # else:
-    #     print("run all app!")
-    #     if (args_.fps):
-    #         for key in logDirDictFps.keys():
-    #             collect_log(logDirDictFps[key],dstPath,key, mode)
-    #     else:
-    #         for key in logDirDict.keys():
-    #             collect_log(logDirDict[key],dstPath,key, mode)
+    dstPath = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), "tmp", mode + '-' + common.get_time())
+    if not os.path.exists(dstPath):
+        os.makedirs(dstPath)
+    
+    if mode not in modeAll:
+        raise Exception(f"parameter error!The mode should in {modeAll}")
+    
+    if app:
+        appLis = app.split(",")
+        if not set(appLis).issubset(set(appAll)) :
+            raise Exception(f"parameter error! The app should in {appAll}")
+        else:
+            for a in appLis:
+                if a in logDirDict:
+                    collect_log(logDirDict[a],dstPath, a, mode)
+    # default:all application log will be collected.
+    else:
+        print("run all app!")
+        if (args_.fps):
+            for key in logDirDictFps.keys():
+                collect_log(logDirDictFps[key],dstPath,key, mode)
+        else:
+            for key in logDirDict.keys():
+                collect_log(logDirDict[key],dstPath,key, mode)
 
     # 读取pmlog
-    srcPmLog=args_.pm_log
-    csv_path=common.seek_file(srcPmLog,dstPath,"pm_log.csv")
-    excel_path=os.path.join(dstPath,"pm_log.xls")
-    data=["TimeSpy_Score","AC + HG"]
-    csv2excel(csv_path,excel_path,mode)
+    # srcPmLog=args_.pm_log
+    # csv_path=common.seek_file(srcPmLog,dstPath,"pm_log.csv")
+    # excel_path=os.path.join(dstPath,"pm_log.xls")
+    # data=["TimeSpy_Score","AC + HG"]
+    # csv2excel(csv_path,excel_path,mode)
     # # csv_excel(csv_path,excel_path)
 
 

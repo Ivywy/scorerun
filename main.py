@@ -9,7 +9,7 @@ from control.get_Furmark_score import get_FurMark_score, get_FurMark_log
 from control.get_heaven_score import get_Heaven_score, get_Heaven_log
 from control.get_3dmark_score import get_3dmark_score, get_3dmark_log
 from control.get_3dmark_score import get_3dmark11_score
-from control.get_pm_log import csv2excel, seek_latest_log
+from control.get_pm_log import csv2excel, seek_latest_log, collect_pm_log
 from util import common
 
 def _prepare_args():
@@ -67,6 +67,8 @@ def collect_log(srcPath,workPath,app,mode):
             raise Exception("{app} log not found!")
         print("Date has been saved in", resultXls)
 
+    collect_pm_log(srcPath, dstPath, [app, mode])
+
 if __name__ == '__main__':
     """
     :param
@@ -120,8 +122,9 @@ if __name__ == '__main__':
 
 
 
-    pmLogPath=r"C:\Users\gvle\AppData\Local\Temp"
-    seek_latest_log(pmLogPath,"TimeSpy",dstPath)
+    pmLogSrcPath=r"C:\Users\gvle\AppData\Local\Temp"
+    seek_latest_log(pmLogSrcPath,"TimeSpy",dstPath)
+    collect_pm_log(pmLogSrcPath,dstPath,[app,mode])
 
 
 

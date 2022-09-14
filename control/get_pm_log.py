@@ -121,6 +121,16 @@ def seek_latest_log(rootDir,app,dstPath):
     common.changeName(latest_path)
     return finalPath
 
+def collect_pm_log(srcPath,dstPath,data):
+    workPath=seek_latest_log(srcPath,data[0],dstPath)
+    excel_path = os.path.join(dstPath, "pm_log.xls")
+    # if not os.path.exists(excel_path):
+    #     os.makedirs()
+    #
+    csv2excel(workPath,excel_path,data)
+
+
+
 
 
 

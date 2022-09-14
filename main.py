@@ -47,13 +47,13 @@ def collect_log(srcPath,workPath,app,mode):
     if app == "Heaven":
         get_html_score(workPath,resultXls,[mode,app])
         # csv2excel(pm_log, "", [app,mode])
-        print("数据生成在", resultXls)
+        print("Date has been saved in ", resultXls)
     elif app == "FurMark":
         get_txt_score(workPath,resultXls,[mode,app])
-        print("数据生成在", resultXls)
+        print("Date has been saved in", resultXls)
     elif app in ["TimeSpy","TimeSpy_FPS", "FireStrike"]:
         get_3dmark_score(workPath,resultXls,[mode,app])
-        print("数据生成在", resultXls)
+        print("Date has been saved in", resultXls)
 
 if __name__ == '__main__':
     """

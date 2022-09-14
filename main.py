@@ -1,5 +1,7 @@
 import argparse
+import datetime
 import os.path
+import re
 from pdb import runcall
 import sys
 
@@ -7,7 +9,7 @@ from control.get_Furmark_score import get_txt_score
 from control.get_heaven_score import get_html_score
 from control.get_3dmark_score import get_3dmark_score
 from control.get_3dmark_score import get_3dmark11_score
-from control.get_pm_log import csv2excel
+from control.get_pm_log import csv2excel, seek_latest_log
 from util import common
 
 def _prepare_args():
@@ -88,14 +90,18 @@ if __name__ == '__main__':
     #             collect_log(logDirDict[key],dstPath,key, mode)
 
     # 读取pmlog
-    srcPmLog=args_.pm_log
-    csv_path=common.seek_file(srcPmLog,dstPath,"pm_log.csv")
-    excel_path=os.path.join(dstPath,"pm_log.xls")
-    data=["TimeSpy_Score","AC + HG"]
-    csv2excel(csv_path,excel_path,mode)
+    # srcPmLog=args_.pm_log
+    # srcPmLog=r"C:\Users\gvle\AppData\Local\Temp"
+    # csv_path=common.seek_file(srcPmLog,dstPath,"pm_log.csv")
+    # excel_path=os.path.join(dstPath,"pm_log.xls")
+    # data=["TimeSpy_Score","AC + HG"]
+    # csv2excel(csv_path,excel_path,mode)
     # # csv_excel(csv_path,excel_path)
 
 
+
+    pmLogPath=r"C:\Users\gvle\AppData\Local\Temp"
+    seek_latest_log(pmLogPath,"TimeSpy",dstPath)
 
 
 

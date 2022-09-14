@@ -1,8 +1,13 @@
+import heapq
 import os
+import re
+
 import pandas as pd
 import xlwt
 import xlrd
 from xlutils.copy import copy
+
+from util import common
 from util.common import mk_dir
 
 # Write the data of the specified column to excel
@@ -21,7 +26,7 @@ def csv2excel(csv_path,excel_path,mode):
         raise Exception(IOError)
 
     if mode[0] not in ["TimeSpy","TimeSpy_FPS","Furmark","Heaven11","FireStrike","3dmark11"]:
-        raise Exception('arg error!! mode[0] must in ["TimeSpy_Score","TimeSpy_FPS","Furmark","Heaven11","FireStrike","3dmark11"] ')
+        raise Exception('arg error!! mode[0] must in ["TimeSpy","TimeSpy_FPS","Furmark","Heaven11","FireStrike","3dmark11"] ')
     if mode[1] not in ["AC + HG","DC + HG","AC + NoHG","DC + NoHG"]:
         raise Exception('arg error!! mode[1] must in ["AC + HG","DC + HG","AC + NoHG","DC + NoHG"]')
 
@@ -87,7 +92,34 @@ def write_excel_xls_append(path, sheet_name,value):
                 new_worksheet.write(i + rows_old, j, value[i][j],style)
             else:
                 new_worksheet.write(i + rows_old, j, value[i][j])
-    new_workbook.save(path) 
+    new_workbook.save(path)
+
+def seek_latest_log(rootDir,app,dstPath):
+    # 获取该app的所有log文件
+    tailKey=common.get_pm_key(app)
+    fileList=[f for f in os.listdir(rootDir) if f.endswith(tailKey) and not f.__contains__("old")]
+
+    # 提取出上面列表的时间戳列表，并构造成字典
+    fileNumList=[]
+    regex = re.compile(r'\d+.*\d')
+    for file in fileList:
+        file_num = int(regex.findall(file)[0].replace("-",""))
+        fileNumList.append(file_num)
+    dic=dict(zip(fileNumList,fileList))
+
+    # 获取时间戳最大的文件，即为该app最新的log目录
+    maxNum=heapq.nlargest(1, fileNumList)[0]
+    latest_path=os.path.join(rootDir,dic[maxNum])
+
+    # 进入该文件找到pm_log.csv，并移动到工作目录
+    dstPath=os.path.join(dstPath,app)
+    if not os.path.exists(dstPath):
+        os.makedirs(dstPath)
+    finalPath=common.seek_file(latest_path, dstPath)
+
+    #修改latest_path名字，方便下次寻找时过滤
+    common.changeName(latest_path)
+    return finalPath
 
 
 

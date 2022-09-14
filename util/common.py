@@ -118,19 +118,34 @@ def copyfile(srcfile,dstpath):
 		return os.path.join(dstpath,fname)
 
 def changeName(beforeFile):
-	index = beforeFile.find('.')
-	finalFile = beforeFile[:index] + '_old' + beforeFile[index:]
+	finalFile=""
+	if beforeFile.__contains__("."):
+		index = beforeFile.find('.')
+		finalFile = beforeFile[:index] + '_old' + beforeFile[index:]
+	else:
+		finalFile=beforeFile+'_old'
 	if os.path.isfile(finalFile):
 		os.remove(finalFile)
 	os.rename(beforeFile,finalFile)
 	if os.path.exists(finalFile) == False:
 		raise Exception("change file name failed!")
 
-def seek_file(rootDir,dstPath,file):
+def seek_file(rootDir,dstPath):
+	file="pm_log.csv"
 	for root, dirs, files in os.walk(rootDir):
 		if file in files:
 			filePath='{0}/{1}'.format(root, file)
 			finalPath=copyfile(filePath,dstPath)
 			changeName(filePath)
 			return finalPath
+
+def get_pm_key(app):
+	if app=="TimeSpy" or "TimeSpy_FPS":
+		return "timespy_extreme_ppa"
+	elif app=="FireStrike":
+		return "firestrike_ppa"
+	elif app=="Heaven":
+		return "heaven4_1080p"
+	elif app=="FurMark":
+		return "furmark_benchmark_4k"
 

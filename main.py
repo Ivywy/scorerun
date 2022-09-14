@@ -7,7 +7,7 @@ import sys
 
 from control.get_Furmark_score import get_txt_score
 from control.get_heaven_score import get_html_score
-from control.get_3dmark_score import get_3dmark_score
+from control.get_3dmark_score import get_3dmark_score, get_3dmark_log
 from control.get_3dmark_score import get_3dmark11_score
 from control.get_pm_log import csv2excel, seek_latest_log
 from util import common
@@ -52,6 +52,7 @@ def collect_log(srcPath,workPath,app,mode):
         get_txt_score(workPath,resultXls,[mode,app])
         print("Date has been saved in", resultXls)
     elif app in ["TimeSpy","TimeSpy_FPS", "FireStrike"]:
+        workPath=get_3dmark_log(srcPath,workPath,app)
         get_3dmark_score(workPath,resultXls,[mode,app])
         print("Date has been saved in", resultXls)
 

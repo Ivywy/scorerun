@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 from bs4 import BeautifulSoup
 import keyboard
+import heapq
 
 
 def mk_dir(path):
@@ -47,7 +48,20 @@ def get_key(app):
 		return "heaven"
 	else:
 		return app
+
 def get_src_log(rootDir,dstPath,app):
+	if app == "TimeSpy" or "TimeSpyFPS" or "FireStrike":
+		get_3dmark_log(rootDir,dstPath, app)
+	elif app == "Heaven":
+		get_heaven_log(rootDir,dstPath)
+	elif app == "FurMark":
+		get_furmark_log(rootDir,dstPath)
+	else:
+		# TODO
+		# 还有3dmark11的日志
+		pass
+
+def get_3dmark_log(rootDir,dstPath, app):
 	'''
 	:param rootDir: Log path where generated directory
 	:param dstPath: The destination path from the rootDir copy
@@ -55,51 +69,106 @@ def get_src_log(rootDir,dstPath,app):
 	:return:
 	'''
 	continue_=False
-	# 找到不含old关键字的文件
-	fileList=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith(('.3dmark-result','.html','.txt'))]
+	# 找到.3dmark-result结尾并包含TimeSpy的日志
+	if app == "TimeSpy":
+		filelist=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith('.3dmark-result') and f.__contains__("TimeSpy")]
+	elif app == "TimeSpyFPS":
+		filelist=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith('.3dmark-result') and f.__contains__("TimeSpyFPS")]
+	elif app == "FireStrike":
+		filelist=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith('.3dmark-result') and f.__contains__("FireStrike")]
 
-	# 获取每个app生成的log中含有的可唯一识别该app的关键字
-	keyword=get_key(app)
+	# 去掉含old字符的文件
+	seletedFiles=list(filter(lambda x: 'old' not in x, filelist))
 
-	if len(fileList)!=0:
-		# 判断不含old字符的文件数量
-		seletedFiles=list(filter(lambda x: 'old' not in x, fileList))
-		# 当有不含old字的文件存在且只含有1个或2个时，进入判断：
-		if len(seletedFiles) == 1 or len(seletedFiles) == 2:
-			generateFiles = []
-			for file in seletedFiles:
-				if file.__contains__(keyword):
-					generateFiles.append(file)
+	# 正则取出日志名字的时间戳
+	logs = list()
+	for log in seletedFiles:
+		logs.append(int(re.compile(r'2022\d+').findall(log)[0]))
 
-			# 与app相匹配的log只有一个时，符合提取要求
-			if len(generateFiles)==1:
-				# copy log到指定目录
-				copyfile(os.path.join(rootDir, generateFiles[0]), dstPath)
-				if os.path.exists(os.path.join(dstPath, generateFiles[0])) == False:
-					raise Exception(f"File {generateFiles[0]} copy Failed!")
+	if len(logs) != 0:
+		# it means have more than one log file,so compare to get the newest log file
+		lastlog = heapq.nlargest(1, logs)
+		for file in seletedFiles:
+			if file.__contains__(lastlog):
+				copyfile(os.path.join(rootDir,file), dstPath)
 				continue_ = True
-				changeName(os.path.join(rootDir, generateFiles[0]))
-
-			# 当 app为Heaven11时，有可能会生成两个log，只取内容含有total score的那个log即可
-			elif len(generateFiles)==2:
-				if keyword == "Heaven":
-						# 判断文件是否包含total关键字
-						for file in generateFiles:
-							if read_heaven_log(os.path.join(rootDir, file)) != None:
-								# copy log到指定目录
-								copyfile(os.path.join(rootDir, file), dstPath)
-								if os.path.exists(os.path.join(dstPath, file)) == False:
-									raise Exception(f"File {file} copy Failed!")
-								continue_ = True
-								break
-						for file in generateFiles:
-							changeName(os.path.join(rootDir, file))
-
-		else:
-			# 将文件重新命名
-			for file in seletedFiles:
 				changeName(os.path.join(rootDir, file))
+				break
+	else:
+		# 将文件重新命名
+		for file in seletedFiles:
+			changeName(os.path.join(rootDir, file))
 
+	if continue_==False:
+		print("\033[0;31;40m", "No matched logs were found of {app},please press enter to continue or esc to exit", "\033[0m")
+
+def get_heaven_log(rootDir,dstPath):
+	'''
+	:param rootDir: Log path where generated directory
+	:param dstPath: The destination path from the rootDir copy
+	:return:
+	'''
+	continue_=False
+	# 找出所有含有heaven的html文件
+	fileList=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith('.html') and f.__contains__("heaven")]
+
+	# 去掉含old字符的文件
+	seletedFiles=list(filter(lambda x: 'old' not in x, fileList))
+
+	logs = list()
+	for log in seletedFiles:
+		logs.append(int(re.compile(r'2022\d+').findall(log)[0]))
+
+	if len(logs) != 0:
+		# it means have more than one log file,so compare to get the newest log file
+		loglist = heapq.nlargest(len(logs), logs)
+		for heaven in loglist:
+			hlog = os.path.join(rootDir, heaven)
+			if read_heaven_log(hlog) != None:
+				# copy log到指定目录
+				copyfile(hlog, dstPath)
+				if os.path.exists(hlog) == False:
+					raise Exception(f"File {hlog} copy Failed!")
+				continue_ = True
+				break
+	
+		for file in seletedFiles:
+			if file.__contains__(loglist):
+				copyfile(os.path.join(rootDir,file), dstPath)
+				continue_ = True
+				changeName(os.path.join(rootDir, file))
+				break
+	else:
+		# 将文件重新命名
+		for file in seletedFiles:
+			changeName(os.path.join(rootDir, file))
+
+	if continue_==False:
+		print("\033[0;31;40m", "No matched logs were found of {app},please press enter to continue or esc to exit", "\033[0m")
+
+def get_furmark_log(rootDir,dstPath):
+	'''
+	:param rootDir: Log path where generated directory
+	:param dstPath: The destination path from the rootDir copy
+	:return:
+	'''
+	continue_=False
+
+	# 找出所有含有furmark的txt文件
+	fileList=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith('.txt') and f.__contains__("FurMark-Scores")]
+
+	# 去掉含old字符的文件
+	seletedFiles=list(filter(lambda x: 'old' not in x, fileList))
+
+	# furmark的文件只能有一个
+	if len(seletedFiles) == 1:
+		copyfile(os.path.join(rootDir,seletedFiles[0]), dstPath)
+		continue_ = True
+		changeName(os.path.join(rootDir, seletedFiles[0]))
+	else:
+		# 将文件重新命名
+		for file in seletedFiles:
+			changeName(os.path.join(rootDir, file))
 
 	if continue_==False:
 		print("\033[0;31;40m", "No matched logs were found of {app},please press enter to continue or esc to exit", "\033[0m")
@@ -132,6 +201,8 @@ def changeName(beforeFile):
 
 def seek_file(rootDir,dstPath):
 	file="pm_log.csv"
+	if rootDir == None:
+		return
 	for root, dirs, files in os.walk(rootDir):
 		if file in files:
 			filePath='{0}/{1}'.format(root, file)

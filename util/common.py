@@ -70,15 +70,16 @@ def get_3dmark_log(rootDir,dstPath, app):
 	'''
 	continue_=False
 	# 找到.3dmark-result结尾并包含TimeSpy的日志
+	fileList = list()
 	if app == "TimeSpy":
-		filelist=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith('.3dmark-result') and f.__contains__("TimeSpy")]
-	elif app == "TimeSpyFPS":
-		filelist=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith('.3dmark-result') and f.__contains__("TimeSpyFPS")]
+		fileList=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith('.3dmark-result') and f.__contains__("TimeSpy")]
+	elif app == "TimeSpy_FPS":
+		fileList=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith('.3dmark-result') and f.__contains__("TimeSpyFPS")]
 	elif app == "FireStrike":
-		filelist=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith('.3dmark-result') and f.__contains__("FireStrike")]
+		fileList=[f for f in os.listdir(rootDir) if os.path.isfile(os.path.join(rootDir,f)) and f.endswith('.3dmark-result') and f.__contains__("FireStrike")]
 
 	# 去掉含old字符的文件
-	seletedFiles=list(filter(lambda x: 'old' not in x, filelist))
+	seletedFiles = list(filter(lambda x: 'old' not in x, fileList))
 
 	# 正则取出日志名字的时间戳
 	logs = list()
@@ -89,8 +90,8 @@ def get_3dmark_log(rootDir,dstPath, app):
 		# it means have more than one log file,so compare to get the newest log file
 		lastlog = heapq.nlargest(1, logs)
 		for file in seletedFiles:
-			if file.__contains__(lastlog):
-				copyfile(os.path.join(rootDir,file), dstPath)
+			if file.__contains__(str(lastlog[0])):
+				copyfile(os.path.join(rootDir, file), dstPath)
 				continue_ = True
 				changeName(os.path.join(rootDir, file))
 				break
@@ -119,25 +120,23 @@ def get_heaven_log(rootDir,dstPath):
 	for log in seletedFiles:
 		logs.append(int(re.compile(r'2022\d+').findall(log)[0]))
 
+	dic = dict(zip(logs, seletedFiles))
+
 	if len(logs) != 0:
 		# it means have more than one log file,so compare to get the newest log file
 		loglist = heapq.nlargest(len(logs), logs)
-		for heaven in loglist:
-			hlog = os.path.join(rootDir, heaven)
-			if read_heaven_log(hlog) != None:
+		for fileNum in loglist:
+			heavenlog = os.path.join(rootDir, dic[fileNum])
+			if read_heaven_log(heavenlog) != None:
 				# copy log到指定目录
-				copyfile(hlog, dstPath)
-				if os.path.exists(hlog) == False:
-					raise Exception(f"File {hlog} copy Failed!")
+				copyfile(heavenlog, dstPath)
+				if os.path.exists(heavenlog) == False:
+					raise Exception(f"File {heavenlog} copy Failed!")
 				continue_ = True
 				break
 	
 		for file in seletedFiles:
-			if file.__contains__(loglist):
-				copyfile(os.path.join(rootDir,file), dstPath)
-				continue_ = True
-				changeName(os.path.join(rootDir, file))
-				break
+			changeName(os.path.join(rootDir, file))
 	else:
 		# 将文件重新命名
 		for file in seletedFiles:
@@ -162,7 +161,7 @@ def get_furmark_log(rootDir,dstPath):
 
 	# furmark的文件只能有一个
 	if len(seletedFiles) == 1:
-		copyfile(os.path.join(rootDir,seletedFiles[0]), dstPath)
+		copyfile(os.path.join(rootDir, seletedFiles[0]), dstPath)
 		continue_ = True
 		changeName(os.path.join(rootDir, seletedFiles[0]))
 	else:

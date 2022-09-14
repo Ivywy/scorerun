@@ -5,8 +5,8 @@ import re
 from pdb import runcall
 import sys
 
-from control.get_Furmark_score import get_txt_score
-from control.get_heaven_score import get_html_score
+from control.get_Furmark_score import get_FurMark_score, get_FurMark_log
+from control.get_heaven_score import get_Heaven_score, get_Heaven_log
 from control.get_3dmark_score import get_3dmark_score, get_3dmark_log
 from control.get_3dmark_score import get_3dmark11_score
 from control.get_pm_log import csv2excel, seek_latest_log
@@ -42,18 +42,29 @@ def collect_log(srcPath,workPath,app,mode):
         print(f"There are not correct log in  {srcPath} .please run your app!")
         return
 
-    common.get_src_log(srcPath,workPath,app)
+    # common.get_src_log(srcPath,workPath,app)
 
     if app == "Heaven":
-        get_html_score(workPath,resultXls,[mode,app])
+        workPath=get_Heaven_log(srcPath,workPath)
+        if workPath:
+            get_Heaven_score(workPath,resultXls,[mode,app])
+        else:
+            raise Exception("{app} log not found!")
         # csv2excel(pm_log, "", [app,mode])
         print("Date has been saved in ", resultXls)
     elif app == "FurMark":
-        get_txt_score(workPath,resultXls,[mode,app])
+        workPath=get_FurMark_log(srcPath,workPath)
+        if workPath:
+            get_FurMark_score(workPath,resultXls,[mode,app])
+        else:
+            raise Exception("{app} log not found!")
         print("Date has been saved in", resultXls)
     elif app in ["TimeSpy","TimeSpy_FPS", "FireStrike"]:
         workPath=get_3dmark_log(srcPath,workPath,app)
-        get_3dmark_score(workPath,resultXls,[mode,app])
+        if workPath:
+            get_3dmark_score(workPath,resultXls,[mode,app])
+        else:
+            raise Exception("{app} log not found!")
         print("Date has been saved in", resultXls)
 
 if __name__ == '__main__':

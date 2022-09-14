@@ -53,7 +53,7 @@ def get_3dmark_log(rootDir, dstPath, app):
                 common.changeName(os.path.join(rootDir, file))
                 break
     else:
-        print("{app} no log generated!!!!")
+        print(f"{app} no log generated!!!!")
 
     if continue_ == False:
         print("\033[0;31;40m", "No matched logs were found of {app},please press enter to continue or esc to exit",

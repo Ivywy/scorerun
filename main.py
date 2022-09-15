@@ -14,7 +14,7 @@ from util import common
 
 def _prepare_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-a","--application",help="application_mode;The value must in ['TimeSpy_Score','TimeSpy_FPS', 'Furmark', 'Heaven', 'FireStrike','3dmark11']")
+    parser.add_argument("-a","--application",help="application_mode;The value must in ['TimeSpy','TimeSpy_FPS', 'Furmark', 'Heaven', 'FireStrike','3dmark11']")
     parser.add_argument("-m","--mode",required=True,help="config_mode;The value must in ['AC + HG', 'DC + HG', 'AC + NoHG', 'DC + NoHG']")
     parser.add_argument("-fps",action='store_true',help="run TimeSpy_FPS but not TimeSpy")
     parser.add_argument("-d","--destination_path",default=r"C:\Users\gvle\tmp")

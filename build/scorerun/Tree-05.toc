@@ -1,0 +1,5 @@
+('c:\\storage\\orc3_py_venv\\lib\\site-packages\\chardet-4.0.0-py3.7.egg',
+ None,
+ {'*.pyc', '*.pyd', 'EGG-INFO', '*.cp37-win_amd64.pyd', '*.pyw', '*.py'},
+ 'DATA',
+ [])

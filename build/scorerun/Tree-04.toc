@@ -1,0 +1,7 @@
+('c:\\storage\\orc3_py_venv\\lib\\site-packages\\jinja2-3.0.3-py3.7.egg',
+ None,
+ {'*.cp37-win_amd64.pyd', '*.pyd', 'EGG-INFO', '*.py', '*.pyc', '*.pyw'},
+ 'DATA',
+ [('jinja2\\py.typed',
+   'c:\\storage\\orc3_py_venv\\lib\\site-packages\\jinja2-3.0.3-py3.7.egg\\jinja2\\py.typed',
+   'DATA')])

@@ -6,7 +6,6 @@ import heapq
 from util.perf_to_excel import write2excel
 
 def read_Heaven_log(file_path):
-    print(file_path)
     doc = open(file_path, 'r', encoding='utf-8').read()
     soup = BeautifulSoup(doc, "html.parser")
     total=soup.findAll(text=re.compile('.*?Total.*?'))
@@ -30,17 +29,25 @@ def get_Heaven_log(rootDir, dstPath):
     '''
     continue_ = False
     # 找出所有含有heaven的html文件
-    fileList = [f for f in os.listdir(rootDir) if
-                os.path.isfile(os.path.join(rootDir, f)) and f.endswith('.html') and f.__contains__("heaven")]
+    seletedFiles = [f for f in os.listdir(rootDir) if
+                os.path.isfile(os.path.join(rootDir, f)) and f.endswith('.html') and f.__contains__("heaven") and not f.__contains__("old")]
 
-    # 去掉含old字符的文件
-    seletedFiles = list(filter(lambda x: 'old' not in x, fileList))
+    if not seletedFiles:
+        print("\033[0;31;40m", f"No matched logs were found of heaven in {rootDir}","\033[0m")
+        return
 
     fileNumList = list()
     for log in seletedFiles:
         fileNumList.append(int(re.compile(r'2022\d+').findall(log)[0]))
+    if not fileNumList:
+        print("\033[0;31;40m", f" {rootDir} log should contain timestamp ", "\033[0m")
+        return
 
-    dic = dict(zip(fileNumList, seletedFiles))
+    dic = dict()
+    for file in seletedFiles:
+        for fileNum in fileNumList:
+            if file.__contains__(str(fileNum)):
+                dic[fileNum]=file
 
     if len(fileNumList) != 0:
         # it means have more than one log file,so compare to get the newest log file
@@ -61,25 +68,9 @@ def get_Heaven_log(rootDir, dstPath):
         print("Heaven no log generated!!!!")
 
     if continue_ == False:
-        print("\033[0;31;40m", "No matched logs were found of {app},please press enter to continue or esc to exit","\033[0m")
+        print("\033[0;31;40m", f"No matched logs were found of heaven,please press enter to continue or esc to exit","\033[0m")
 
     return dstPath
-
-# Get all files end with .html
-# def get_heaven_log(rootDir):
-#     # allFiles=[]
-#     fileList = os.listdir(rootDir)
-#     # print(fileList,"----------")
-#     for filename in fileList:
-#         pathTmp = os.path.join(rootDir, filename)
-#         if os.path.isdir(pathTmp):
-#             get_heaven_log(pathTmp)
-#         elif filename.endswith("html") and filename.__contains__("heaven"):
-#             print("1111111",filename)
-#             # allFiles.append(pathTmp)
-#             return os.path.join(rootDir,filename)
-    # return allFiles
-
 
 # get score in html file
 def get_Heaven_score(srcPath,dstFile,data):

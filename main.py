@@ -15,9 +15,8 @@ from util import common
 def _prepare_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-a","--application",help="application_mode;The value must in ['TimeSpy_Score','TimeSpy_FPS', 'Furmark', 'Heaven', 'FireStrike','3dmark11']")
-    parser.add_argument("-m","--mode",required=True,help="config_mode;he value must in ['AC + HG', 'DC + HG', 'AC + NoHG', 'DC + NoHG']")
+    parser.add_argument("-m","--mode",required=True,help="config_mode;The value must in ['AC + HG', 'DC + HG', 'AC + NoHG', 'DC + NoHG']")
     parser.add_argument("-fps",action='store_true',help="run TimeSpy_FPS but not TimeSpy")
-    parser.add_argument("-pm","--pm_log",help="path of pm_log.csv")
     parser.add_argument("-d","--destination_path",default=r"C:\Users\gvle\tmp")
     return parser.parse_args()
 
@@ -28,46 +27,45 @@ def collect_log(srcPath,workPath,app,mode):
     :param mode:
     :return:
     '''
-    print(f"!!!Begin collect {app} log")
 
+    print(f"\033[0;34;40m######Begin collect {app} performance log######\033[0m")
     if not os.path.exists(srcPath):
-        os.makedirs(srcPath)
-        print(srcPath,"is not exist, maybe you run a error env")
         raise Exception(f"{srcPath} is not exist, maybe you run a error env")
 
-    if workPath:
-        resultXls = os.path.join(workPath, "result.xls")
-    else:
-        # TODO when one app dosn't match the condition,The script should exit or skip the app?
-        print(f"There are not correct log in  {srcPath} .please run your app!")
-        return
+    if not os.path.exists(workPath):
+        os.makedirs(workPath)
 
-    # common.get_src_log(srcPath,workPath,app)
+    resultXls = os.path.join(workPath, "result.xls")
 
     if app == "Heaven":
         workPath=get_Heaven_log(srcPath,workPath)
         if workPath:
             get_Heaven_score(workPath,resultXls,[mode,app])
         else:
-            raise Exception("{app} log not found!")
-        # csv2excel(pm_log, "", [app,mode])
+            print(f"{app} log not found!")
+            return
+            # csv2excel(pm_log, "", [app,mode])
         print("Date has been saved in ", resultXls)
     elif app == "FurMark":
         workPath=get_FurMark_log(srcPath,workPath)
         if workPath:
             get_FurMark_score(workPath,resultXls,[mode,app])
         else:
-            raise Exception("{app} log not found!")
+            print(f"{app} log not found!")
+            return
         print("Date has been saved in", resultXls)
     elif app in ["TimeSpy","TimeSpy_FPS", "FireStrike"]:
         workPath=get_3dmark_log(srcPath,workPath,app)
         if workPath:
             get_3dmark_score(workPath,resultXls,[mode,app])
         else:
-            raise Exception("{app} log not found!")
+            print(f"{app} log not found!")
+            return
         print("Date has been saved in", resultXls)
 
-    collect_pm_log(srcPath, dstPath, [app, mode])
+    print(f"\033[0;34;40m######Begin collect {app} pm log######\033[0m")
+    pmLogSrcPath = r"C:\Users\gvle\AppData\Local\Temp"
+    collect_pm_log(pmLogSrcPath, dstPath, [app, mode])
 
 if __name__ == '__main__':
     """
@@ -77,9 +75,11 @@ if __name__ == '__main__':
         3.data (data[0] must in ["AC + HG", "DC + HG", "AC + NoHG", "DC + NoHG"]
                 data[1] must in [["TimeSpy", "FurMark", "Heaven", "FireStrike","3dmark11"]])
     """
+    # src log path
     markPath=r"C:\Users\gvle\Documents\3DMark"
     logDirDict={"TimeSpy":markPath,"FurMark":r"C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark","Heaven":r"C:\Users\gvle\Heaven","FireStrike":markPath}
     logDirDictFps={"TimeSpy_FPS":markPath,"FurMark":r"C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark","Heaven":r"C:\Users\gvle\Heaven","FireStrike":markPath}
+
     args_=_prepare_args()
     dstPath=args_.destination_path
     mode = args_.mode
@@ -103,28 +103,14 @@ if __name__ == '__main__':
                     collect_log(logDirDict[a],dstPath, a, mode)
     # default:all application log will be collected.
     else:
-        print("run all app!")
+        print("will collect all applications' logs!")
+        # if fps==True,run TimeSpy_FPS,else run TimeSpy
         if (args_.fps):
             for key in logDirDictFps.keys():
                 collect_log(logDirDictFps[key],dstPath,key, mode)
         else:
             for key in logDirDict.keys():
                 collect_log(logDirDict[key],dstPath,key, mode)
-
-    # 读取pmlog
-    # srcPmLog=args_.pm_log
-    # srcPmLog=r"C:\Users\gvle\AppData\Local\Temp"
-    # csv_path=common.seek_file(srcPmLog,dstPath,"pm_log.csv")
-    # excel_path=os.path.join(dstPath,"pm_log.xls")
-    # data=["TimeSpy_Score","AC + HG"]
-    # csv2excel(csv_path,excel_path,mode)
-    # # csv_excel(csv_path,excel_path)
-
-
-
-    pmLogSrcPath=r"C:\Users\gvle\AppData\Local\Temp"
-    seek_latest_log(pmLogSrcPath,"TimeSpy",dstPath)
-    collect_pm_log(pmLogSrcPath,dstPath,[app,mode])
 
 
 

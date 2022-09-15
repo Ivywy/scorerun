@@ -42,22 +42,24 @@ def get_3dmark_log(rootDir, dstPath, app):
     logs = list()
     for log in seletedFiles:
         logs.append(int(re.compile(r'2022\d+').findall(log)[0]))
-
+    # 根据时间戳找出最新生成的log，并复制到工作目录
     if len(logs) != 0:
         # it means have more than one log file,so compare to get the newest log file
-        lastlog = heapq.nlargest(1, logs)
+        maxLogList = heapq.nlargest(1, logs)
         for file in seletedFiles:
-            if file.__contains__(str(lastlog[0])):
+            if file.__contains__(str(maxLogList[0])):
                 dstPath = common.copyfile(os.path.join(rootDir, file), dstPath)
                 continue_ = True
-                common.changeName(os.path.join(rootDir, file))
                 break
+
+        for file in seletedFiles:
+            common.changeName(os.path.join(rootDir, file))
     else:
         print(f"{app} no log generated!!!!")
 
     if continue_ == False:
-        print("\033[0;31;40m", "No matched logs were found of {app},please press enter to continue or esc to exit",
-              "\033[0m")
+        print("\033[0;31;40m", f"No matched logs were found of {app},please ensure log has been generated in {rootDir}","\033[0m")
+        return
 
     return dstPath
         

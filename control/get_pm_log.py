@@ -12,7 +12,7 @@ from util.common import mk_dir
 
 # Write the data of the specified column to excel
 def csv_excel(csv_path,excel_path):
-    file = pd.read_csv(csv_path)
+    file = pd.read_csv(csv_path,dtype={"user_id": int, "username": object})
     row_head = ['GPU0 Power Socket Power', 'GPU0 Frequencies Target Frequency GFXCLK',
                 'GPU0 Frequencies Actual Frequency GFXCLK', 'GPU0 Power TGP Power', 'GPU0 Temperature Hotspot',
                 'GPU0 Temperature MEM', 'GPU0 Fan PWM']
@@ -25,13 +25,17 @@ def csv2excel(csv_path,excel_path,mode):
     if not excel_path.endswith(".xls"):
         raise Exception(IOError)
 
-    if mode[0] not in ["TimeSpy","TimeSpy_FPS","Furmark","Heaven11","FireStrike","3dmark11"]:
-        raise Exception('arg error!! mode[0] must in ["TimeSpy","TimeSpy_FPS","Furmark","Heaven11","FireStrike","3dmark11"] ')
-    if mode[1] not in ["AC + HG","DC + HG","AC + NoHG","DC + NoHG"]:
-        raise Exception('arg error!! mode[1] must in ["AC + HG","DC + HG","AC + NoHG","DC + NoHG"]')
+    # if mode[0] not in ["TimeSpy","TimeSpy_FPS","Furmark","Heaven11","FireStrike","3dmark11"]:
+    #     raise Exception('arg error!! mode[0] must in ["TimeSpy","TimeSpy_FPS","Furmark","Heaven11","FireStrike","3dmark11"] ')
+    # if mode[1] not in ["AC + HG","DC + HG","AC + NoHG","DC + NoHG"]:
+    #     raise Exception('arg error!! mode[1] must in ["AC + HG","DC + HG","AC + NoHG","DC + NoHG"]')
 
-    row_head = ['GPU0 Power Socket Power', 'GPU0 Frequencies Target Frequency GFXCLK',
-                'GPU0 Frequencies Actual Frequency GFXCLK', 'GPU0 Power TGP Power', 'GPU0 Temperature Hotspot',
+    # row_head = ['GPU0 Power Socket Power', 'GPU0 Frequencies Target Frequency GFXCLK',
+    #             'GPU0 Frequencies Actual Frequency GFXCLK', 'GPU0 Power TGP Power', 'GPU0 Temperature Hotspot',
+    #             'GPU0 Temperature MEM', 'GPU0 Fan PWM']
+
+    row_head = ['GPU0 Power Socket Power', 'GPU0 Frequencies Target Frequency LCLK',
+                'GPU0 Frequencies Actual Frequency LCLK', 'GPU0 Power TGP Power', 'GPU0 Temperature Hotspot',
                 'GPU0 Temperature MEM', 'GPU0 Fan PWM']
     # _,file_name=os.path.split(excel_path)
     if not os.path.exists(excel_path):
@@ -96,38 +100,59 @@ def write_excel_xls_append(path, sheet_name,value):
 
 def seek_latest_log(rootDir,app,dstPath):
     # 获取该app的所有log文件
+    # print("app=",app)
     tailKey=common.get_pm_key(app)
+    # print("tailKey=",tailKey)
     fileList=[f for f in os.listdir(rootDir) if f.endswith(tailKey) and not f.__contains__("old")]
+    # print("fileList=",fileList)
 
     # 提取出上面列表的时间戳列表，并构造成字典
     fileNumList=[]
-    regex = re.compile(r'\d+.*\d')
-    for file in fileList:
-        file_num = int(regex.findall(file)[0].replace("-",""))
-        fileNumList.append(file_num)
-    dic=dict(zip(fileNumList,fileList))
+    regex = re.compile(r'\d+.*-\d')
+    if fileList:
+        for file in fileList:
+            file_num = int(regex.findall(file)[0].replace("-",""))
+            fileNumList.append(file_num)
+        dic=dict(zip(fileNumList,fileList))
 
-    # 获取时间戳最大的文件，即为该app最新的log目录
-    maxNum=heapq.nlargest(1, fileNumList)[0]
-    latest_path=os.path.join(rootDir,dic[maxNum])
+        # 获取时间戳最大的文件，即为该app最新的log目录
+        maxNum=heapq.nlargest(1, fileNumList)[0]
+        latest_path=os.path.join(rootDir,dic[maxNum])
+        # print("latest_path",latest_path)
 
-    # 进入该文件找到pm_log.csv，并移动到工作目录
-    dstPath=os.path.join(dstPath,app)
-    if not os.path.exists(dstPath):
-        os.makedirs(dstPath)
-    finalPath=common.seek_file(latest_path, dstPath)
+        # 进入该文件找到pm_log.csv，并移动到工作目录
+        dstPath=os.path.join(dstPath,app)
+        if not os.path.exists(dstPath):
+            os.makedirs(dstPath)
+        finalPath=common.seek_file(latest_path, dstPath)
+        if not finalPath:
+            print("\033[0;31;40m",f"There are not pm_log.csv in {latest_path},please check!", "\033[0m")
+            return
+        # print("finalPath=",finalPath)
 
-    #修改latest_path名字，方便下次寻找时过滤
-    common.changeName(latest_path)
-    return finalPath
+        #修改latest_path名字，方便下次寻找时过滤
+        for file in fileList:
+            common.changeName(os.path.join(rootDir,file))
+
+        return finalPath
+    else:
+        print("\033[0;31;40m", f"No matched pmlogs were found of {app},please ensure log has been generated in {rootDir}","\033[0m")
+        return
 
 def collect_pm_log(srcPath,dstPath,data):
     workPath=seek_latest_log(srcPath,data[0],dstPath)
-    excel_path = os.path.join(dstPath, "pm_log.xls")
-    # if not os.path.exists(excel_path):
-    #     os.makedirs()
-    #
-    csv2excel(workPath,excel_path,data)
+    if workPath:
+        excel_path = os.path.join(dstPath, "pm_log.xls")
+        # if not os.path.exists(excel_path):
+        #     os.makedirs()
+        #
+        # print("csvpath=",workPath)
+        # print("excel_path",excel_path)
+        csv2excel(workPath,excel_path,data)
+        print(f"\033[0;32;40m{data[0]}'s pmlog has been collected in {excel_path} successfully!\033[0m")
+    else:
+        print("\033[0;31;40m","No matched pmlogs","\033[0m")
+        return
 
 
 

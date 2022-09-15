@@ -20,17 +20,6 @@ def mk_dir(path):
 def get_time():
     return time.strftime('%Y%m%d%H%M%S', time.localtime())
 
-# read file content
-
-
-
-def get_key(app):
-	if "TimeSpy" in app:
-		return "TimeSpy"
-	elif "Heaven" in app:
-		return "heaven"
-	else:
-		return app
 
 # def get_src_log(rootDir,dstPath,app):
 # 	if app == "TimeSpy" or "TimeSpy_FPS" or "FireStrike":
@@ -77,11 +66,11 @@ def seek_file(rootDir,dstPath):
 		if file in files:
 			filePath='{0}/{1}'.format(root, file)
 			finalPath=copyfile(filePath,dstPath)
-			changeName(filePath)
+			# changeName(filePath)
 			return finalPath
 
 def get_pm_key(app):
-	if app=="TimeSpy" or "TimeSpy_FPS":
+	if app=="TimeSpy" or app=="TimeSpy_FPS":
 		return "timespy_extreme_ppa"
 	elif app=="FireStrike":
 		return "firestrike_ppa"
@@ -89,4 +78,6 @@ def get_pm_key(app):
 		return "heaven4_1080p"
 	elif app=="FurMark":
 		return "furmark_benchmark_4k"
+	else:
+		print(f'appname error,{app} should in ["TimeSpy", "TimeSpy_FPS","FurMark", "Heaven", "FireStrike","3dmark11"]')
 

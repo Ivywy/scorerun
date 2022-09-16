@@ -1,5 +1,0 @@
-('c:\\storage\\orc3_py_venv\\lib\\site-packages\\keyboard-0.13.5-py3.7.egg',
- None,
- {'*.pyc', '*.pyd', 'EGG-INFO', '*.cp37-win_amd64.pyd', '*.pyw', '*.py'},
- 'DATA',
- [])

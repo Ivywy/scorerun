@@ -3,6 +3,8 @@ import re
 from bs4 import BeautifulSoup
 from util import common
 import heapq
+
+from util.logger_util import  log_info,log_error
 from util.perf_to_excel import write2excel
 
 def read_Heaven_log(file_path):
@@ -19,7 +21,7 @@ def read_Heaven_log(file_path):
 
         return float(s)
     else:
-        print("There are no keyword 'total' in file {}".format(file_path))
+        log_error("There are no keyword 'total' in file {}".format(file_path))
         return None
 def get_Heaven_log(rootDir, dstPath):
     '''
@@ -28,19 +30,19 @@ def get_Heaven_log(rootDir, dstPath):
     :return:
     '''
     continue_ = False
-    # 找出所有含有heaven的html文件
+    # find the specific logs
     seletedFiles = [f for f in os.listdir(rootDir) if
                 os.path.isfile(os.path.join(rootDir, f)) and f.endswith('.html') and f.__contains__("heaven") and not f.__contains__("old")]
 
     if not seletedFiles:
-        print("\033[0;31;40m", f"No matched logs were found of heaven in {rootDir}","\033[0m")
+        log_error(f"No matched logs were found of heaven in {rootDir}")
         return
 
     fileNumList = list()
     for log in seletedFiles:
         fileNumList.append(int(re.compile(r'2022\d+').findall(log)[0]))
     if not fileNumList:
-        print("\033[0;31;40m", f" {rootDir} log should contain timestamp ", "\033[0m")
+        log_error( f" {rootDir} log should contain timestamp ")
         return
 
     dic = dict()
@@ -55,7 +57,7 @@ def get_Heaven_log(rootDir, dstPath):
         for fileNum in loglist:
             heavenlog = os.path.join(rootDir, dic[fileNum])
             if read_Heaven_log(heavenlog) != None:
-                # copy log到指定目录
+                # copy to work path
                 dstPath=common.copyfile(heavenlog, dstPath)
                 if os.path.exists(heavenlog) == False:
                     raise Exception(f"File {heavenlog} copy Failed!")
@@ -65,10 +67,10 @@ def get_Heaven_log(rootDir, dstPath):
         for file in seletedFiles:
             common.changeName(os.path.join(rootDir, file))
     else:
-        print("Heaven no log generated!!!!")
+        log_error("Heaven no log generated!!!!")
 
     if continue_ == False:
-        print("\033[0;31;40m", f"No matched logs were found of heaven,please press enter to continue or esc to exit","\033[0m")
+        log_error("No matched logs were found of heaven,please press enter to continue or esc to exit")
 
     return dstPath
 
@@ -78,4 +80,4 @@ def get_Heaven_score(srcPath,dstFile,data):
     if score:
         return write2excel(dstFile, "sheet1", [data[0], data[1], score])
     else:
-        raise Exception("There file hasn't score {}".format(srcPath))
+        log_error("There file hasn't score {}".format(srcPath))

@@ -3,6 +3,9 @@ import xlrd
 import xlwt
 from xlutils.copy import copy
 
+from util.logger_util import log_info, log_error, log_debug, log_critical
+
+
 # Write the first column and first row of data to the table
 def write_excel_head(fileName,sheetName,row_head,column_head):
     workbook = xlwt.Workbook()
@@ -22,17 +25,17 @@ def get_value_position(fileName,sheet_name,row_name,col_name):
     sheet=wb.sheet_by_name(sheet_name)
     row, col = 0, 0
     row_head=sheet.row_values(0)
-    print("row_name=",row_name,"col_name=",col_name)
+    log_debug(f"row_name={row_name},col_name={col_name}")
     if row_name in row_head:
         col=row_head.index(row_name)
     else:
-        print("\033[0;31;40m", f"{row_name} not found in list", "\033[0m")
+        log_error( f"{row_name} not found in list")
         return
     coloumn_head=sheet.col_values(0)
     if col_name in coloumn_head:
         row=coloumn_head.index(col_name)
     else:
-        print("\033[0;31;40m", f"{col_name} not found in list", "\033[0m")
+        log_error(f"{col_name} not found in list")
         return
     return row,col
 
@@ -46,7 +49,7 @@ def write2excel(fileName,sheetName,data):
     """
     # Check if the file name is the xls suffix
     if not fileName.endswith(".xls"):
-        raise Exception("destination file should end with xls")
+        log_critical("destination file should end with xls")
     row_head = ["AC+HG", "DC+HG", "AC+NoHG", "DC+NoHG"]
     column_head = ["TimeSpy","TimeSpy_FPS", "FurMark", "Heaven", "FireStrike","3dmark11"]
 
@@ -62,27 +65,26 @@ def write2excel(fileName,sheetName,data):
     wb = xlrd.open_workbook(fileName,formatting_info=True)
     sheetnames = wb.sheet_names()
     if sheetName not in sheetnames:
-        raise Exception("%s Not Found"%sheetName)
+        log_critical("%s Not Found"%sheetName)
 
     workbook = copy(wb=wb)
     worksheet = workbook.get_sheet(sheetnames.index(sheetName))
 
     if not isinstance(data,list):
-        raise Exception("data is not a list")
+        log_critical("data is not a list")
 
     if not isinstance(data[2],int) and not isinstance(data[2],float):
-        raise Exception("the value must be int or float")
+        log_critical("the value must be int or float")
 
     pos=list(get_value_position(fileName,sheetName,data[0],data[1]))
     worksheet.write(pos[0],pos[1],data[2])
     workbook.save(fileName)
-    print(f"\033[0;32;40m{data[1]}'s score={data[2]} has been collected in {fileName} successfully!\033[0m")
+    log_info(f"{data[1]}'s score={data[2]} has been collected in {fileName} successfully!")
 
 def read4excel(fileName,sheet,row,col):
     wb = xlrd.open_workbook(fileName, formatting_info=True)
     worksheet=wb.get_sheet(sheet)
     value=worksheet.cell(row,col)
-    print(value)
     return value
 
 

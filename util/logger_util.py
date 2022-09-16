@@ -9,7 +9,6 @@ import logging
 import os
 import time
 
-from util.common import get_object_path
 
 
 class LoggerUtil:
@@ -23,11 +22,10 @@ class LoggerUtil:
         if not self.logger.handlers:
             # print("-----------------文件日志--------------------")
             # 设置file日志文件的路径
-            if not os.path.exists(get_object_path() + "logs/"):
-                os.mkdir(get_object_path() + "logs/")
+            if not os.path.exists(os.path.join(os.path.abspath(os.getcwd()),"logs")):
+                os.mkdir(os.path.join(os.path.abspath(os.getcwd()),"logs"))
 
-            self.log_file_path = get_object_path() + "logs/" + "log" + str(
-                int(time.time())) + '.log'
+            self.log_file_path = os.path.join(os.path.abspath(os.getcwd()),"logs") + "/log" + time.strftime('%Y%m%d%H%M%S', time.localtime()) + '.log'
             # 创建file日志的控制器
             self.file_handler = logging.FileHandler(self.log_file_path, encoding='utf-8')
             # 单独的设置文件日志的级别
@@ -54,7 +52,7 @@ class LoggerUtil:
             # 创建console日志的控制器
             self.console_handler = logging.StreamHandler()
             # 单独的设置console日志的级别
-            console_log_level = "debug"
+            console_log_level = "info"
             if console_log_level == 'debug':
                 self.console_handler.setLevel(logging.DEBUG)
             elif console_log_level == 'info':
@@ -77,15 +75,20 @@ class LoggerUtil:
         #返回
         return self.logger
 
-#正确的日志
+def log_debug(log_message):
+    LoggerUtil().create_log().debug(log_message)
 def log_info(log_message):
     LoggerUtil().create_log().info(log_message)
 
-
-#错误的日志
 def log_error(log_message):
-    LoggerUtil().create_log().info(log_message)
+    LoggerUtil().create_log().error(log_message)
+
+def log_critical(log_message):
+    LoggerUtil().create_log().critical(log_message)
     raise Exception(log_message)
 
 # if __name__ == '__main__':
-#     log_info("aaaa")
+#     try:
+#         log_error("111")
+#     except Exception as e:
+#         raise e

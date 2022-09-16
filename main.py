@@ -11,6 +11,8 @@ from control.get_3dmark_score import get_3dmark_score, get_3dmark_log
 from control.get_3dmark_score import get_3dmark11_score
 from control.get_pm_log import csv2excel, seek_latest_log, collect_pm_log
 from util import common
+from util.logger_util import log_info, log_error, log_critical
+
 
 def _prepare_args():
     parser = argparse.ArgumentParser()
@@ -28,9 +30,9 @@ def collect_log(srcPath,workPath,app,mode):
     :return:
     '''
 
-    print(f"\033[0;34;40m######Begin collect {app} performance log######\033[0m")
+    log_info(f"++++++++++Begin collect {app} performance log++++++++++++++++")
     if not os.path.exists(srcPath):
-        raise Exception(f"{srcPath} is not exist, maybe you run a error env")
+        log_critical(f"{srcPath} is not exist, maybe you run a error env")
 
     if not os.path.exists(workPath):
         os.makedirs(workPath)
@@ -42,28 +44,27 @@ def collect_log(srcPath,workPath,app,mode):
         if workPath:
             get_Heaven_score(workPath,resultXls,[mode,app])
         else:
-            print(f"{app} log not found!")
+            log_error(f"{app} log not found!")
             return
-            # csv2excel(pm_log, "", [app,mode])
-        print("Date has been saved in ", resultXls)
+
     elif app == "FurMark":
         workPath=get_FurMark_log(srcPath,workPath)
         if workPath:
             get_FurMark_score(workPath,resultXls,[mode,app])
         else:
-            print(f"{app} log not found!")
+            log_error(f"{app} log not found!")
             return
-        print("Date has been saved in", resultXls)
+
     elif app in ["TimeSpy","TimeSpy_FPS", "FireStrike"]:
         workPath=get_3dmark_log(srcPath,workPath,app)
         if workPath:
             get_3dmark_score(workPath,resultXls,[mode,app])
         else:
-            print(f"{app} log not found!")
+            log_error(f"{app} log not found!")
             return
-        print("Date has been saved in", resultXls)
 
-    print(f"\033[0;34;40m######Begin collect {app} pm log######\033[0m")
+
+    log_info(f"+++++++++++++Begin collect {app} pm log++++++++++++++++++++")
     pmLogSrcPath = r"C:\Users\gvle\AppData\Local\Temp"
     collect_pm_log(pmLogSrcPath, dstPath, [app, mode])
 
@@ -103,7 +104,7 @@ if __name__ == '__main__':
                     collect_log(logDirDict[a],dstPath, a, mode)
     # default:all application log will be collected.
     else:
-        print("will collect all applications' logs!")
+        log_info("will collect all applications' logs!")
         # if fps==True,run TimeSpy_FPS,else run TimeSpy
         if (args_.fps):
             for key in logDirDictFps.keys():

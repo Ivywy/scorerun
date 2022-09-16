@@ -1,3 +1,9 @@
 .idea
 control/__pycache__/*
 util/__pycache__/*
+build/*
+dist/*
+logs/*
+scorerun.*
+test.py
+data/*

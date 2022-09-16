@@ -9,6 +9,7 @@ from xml.etree import ElementTree
 import heapq
 import re
 
+from util.logger_util import log_error
 from util.perf_to_excel import write2excel
 
 # 从src目录中找到log文件，并移动到指定文件夹
@@ -55,26 +56,13 @@ def get_3dmark_log(rootDir, dstPath, app):
         for file in seletedFiles:
             common.changeName(os.path.join(rootDir, file))
     else:
-        print(f"{app} no log generated!!!!")
+        log_error(f"{app} no log generated!!!!")
 
     if continue_ == False:
-        print("\033[0;31;40m", f"No matched logs were found of {app},please ensure log has been generated in {rootDir}","\033[0m")
+        log_error(f"No matched logs were found of {app},please ensure log has been generated in {rootDir}")
         return
 
     return dstPath
-        
-
-
-# def get_3dmark(rootDir):
-#     allFiles = []
-#     fileList = os.listdir(rootDir)
-#     for filename in fileList:
-#         pathTmp = os.path.join(rootDir, filename)
-#         if os.path.isdir(pathTmp):
-#             get_3dmark(pathTmp)
-#         elif filename.endswith("3dmark-result") and "-FAILED-" not in filename:
-#             allFiles.append(pathTmp)
-#     return allFiles
 
 def extract_3dResult(filename,dst_name):
     if os.path.isfile(filename):
@@ -85,9 +73,9 @@ def extract_3dResult(filename,dst_name):
         if os.path.exists(dst_name):
             return dst_name
         else:
-            print("The 3dMark result generate failed!")
+            log_error("The 3dMark result generate failed!")
     else:
-        print(filename, "{} is not a file".format(filename))
+        log_error("{} is not a file".format(filename))
         sys.exit(0)
 
 def read_xml(file_path,item):

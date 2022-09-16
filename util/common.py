@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 import keyboard
 import heapq
 
+from util.logger_util import log_info, log_debug, log_error
+
 
 def mk_dir(path):
     folder = os.path.exists(path)
@@ -36,13 +38,13 @@ def get_time():
 
 def copyfile(srcfile,dstpath):
 	if not os.path.isfile(srcfile):
-		print ("%s not exist!"%(srcfile))
+		log_debug("%s not exist!"%(srcfile))
 	else:
 		fpath,fname=os.path.split(srcfile)
 		if not os.path.exists(dstpath):
 			os.makedirs(dstpath)
 		shutil.copy(srcfile, dstpath)
-		print ("copy %s -> %s"%(srcfile, os.path.join(dstpath,fname)))
+		log_info("have copied %s -> %s"%(srcfile, os.path.join(dstpath,fname)))
 		return os.path.join(dstpath,fname)
 
 def changeName(beforeFile):
@@ -56,7 +58,7 @@ def changeName(beforeFile):
 		os.remove(finalFile)
 	os.rename(beforeFile,finalFile)
 	if os.path.exists(finalFile) == False:
-		raise Exception("change file name failed!")
+		log_debug("change file name failed!")
 
 def seek_file(rootDir,dstPath):
 	file="pm_log.csv"
@@ -79,5 +81,5 @@ def get_pm_key(app):
 	elif app=="FurMark":
 		return "furmark_benchmark_4k"
 	else:
-		print(f'appname error,{app} should in ["TimeSpy", "TimeSpy_FPS","FurMark", "Heaven", "FireStrike","3dmark11"]')
+		log_error(f'appname error,{app} should in ["TimeSpy", "TimeSpy_FPS","FurMark", "Heaven", "FireStrike","3dmark11"]')
 

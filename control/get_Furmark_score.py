@@ -1,6 +1,7 @@
 import os
 import re
 from util import common
+from util.logger_util import log_error
 from util.perf_to_excel import write2excel
 
 def get_FurMark_log(rootDir,dstPath):
@@ -19,7 +20,7 @@ def get_FurMark_log(rootDir,dstPath):
         return dstPath
 
     else:
-        print("\033[0;31;40m", f"No matched logs were found of furMark in {rootDir},Please check!","\033[0m")
+        log_error(f"No matched logs were found of furMark in {rootDir},Please check!")
         return
 
     # # 找出所有含有furmark的txt文件
@@ -49,7 +50,7 @@ def get_FurMark_score(srcPath,dstFile,data):
     li = list()
 
     if not os.path.isfile(srcPath):
-        print("input file is not exists")
+        log_error("input file is not exists")
         return
 
     with open(srcPath, "r") as f:

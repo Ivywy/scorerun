@@ -17,8 +17,7 @@ from util.logger_util import log_info, log_error, log_critical
 def _prepare_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-a","--application",help="application_mode;The value must in ['TimeSpy','TimeSpy_FPS', 'Furmark', 'Heaven', 'FireStrike','3dmark11']")
-    parser.add_argument("-m","--mode",required=True,help="config_mode;The value must in ['AC + HG', 'DC + HG', 'AC + NoHG', 'DC + NoHG']")
-    parser.add_argument("-fps",action='store_true',help="run TimeSpy_FPS but not TimeSpy")
+    parser.add_argument("-m","--mode",required=True,help="config_mode;The value must in ['AC+HG', 'DC+HG', 'AC+NoHG', 'DC+NoHG']")
     parser.add_argument("-d","--destination_path",default=r"C:\Users\gvle\tmp")
     return parser.parse_args()
 
@@ -73,13 +72,12 @@ if __name__ == '__main__':
     :param
         1.log path
         2. destination excel file path
-        3.data (data[0] must in ["AC + HG", "DC + HG", "AC + NoHG", "DC + NoHG"]
+        3.data (data[0] must in ["AC+HG", "DC+HG", "AC+NoHG", "DC+NoHG"]
                 data[1] must in [["TimeSpy", "FurMark", "Heaven", "FireStrike","3dmark11"]])
     """
     # src log path
     markPath=r"C:\Users\gvle\Documents\3DMark"
-    logDirDict={"TimeSpy":markPath,"FurMark":r"C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark","Heaven":r"C:\Users\gvle\Heaven","FireStrike":markPath}
-    logDirDictFps={"TimeSpy_FPS":markPath,"FurMark":r"C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark","Heaven":r"C:\Users\gvle\Heaven","FireStrike":markPath}
+    logDirDict={"TimeSpy":markPath,"TimeSpy_FPS":markPath,"FurMark":r"C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark","Heaven":r"C:\Users\gvle\Heaven","FireStrike":markPath}
 
     args_=_prepare_args()
     dstPath=args_.destination_path
@@ -105,13 +103,8 @@ if __name__ == '__main__':
     # default:all application log will be collected.
     else:
         log_info("will collect all applications' logs!")
-        # if fps==True,run TimeSpy_FPS,else run TimeSpy
-        if (args_.fps):
-            for key in logDirDictFps.keys():
-                collect_log(logDirDictFps[key],dstPath,key, mode)
-        else:
-            for key in logDirDict.keys():
-                collect_log(logDirDict[key],dstPath,key, mode)
+        for key in logDirDict.keys():
+            collect_log(logDirDict[key],dstPath,key, mode)
 
 
 

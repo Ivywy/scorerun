@@ -22,19 +22,16 @@ def get_3dmark_log(rootDir, dstPath, app):
     '''
     continue_ = False
     # 找到.3dmark-result结尾并包含TimeSpy的日志
-    fileList = list()
+    fileList = [f for f in os.listdir(rootDir) if
+                    os.path.isfile(os.path.join(rootDir, f)) and not f.__contains__('old') and f.endswith('.3dmark-result')]
+
     if app == "TimeSpy":
-        fileList = [f for f in os.listdir(rootDir) if
-                    os.path.isfile(os.path.join(rootDir, f)) and f.endswith('.3dmark-result') and f.__contains__
-                    ("TimeSpyExtremeCustom") and not f.__contains__("FAILED")]
+        fileList = [f for f in fileList if f.__contains__("TimeSpyExtreme") and not f.__contains__("FAILED") and f.__contains__("-2173-")]
     elif app == "TimeSpy_FPS":
-        fileList = [f for f in os.listdir(rootDir) if
-                    os.path.isfile(os.path.join(rootDir, f)) and f.endswith('.3dmark-result') and f.__contains__
-                    ("TimeSpyExtremeCustom") and not f.__contains__("FAILED")]
+        fileList = [f for f in fileList if f.__contains__("TimeSpyExtreme") and not f.__contains__("FAILED") and f.__contains__("-0-")]
+
     elif app == "FireStrike":
-        fileList = [f for f in os.listdir(rootDir) if
-                    os.path.isfile(os.path.join(rootDir, f)) and f.endswith('.3dmark-result') and f.__contains__
-                    ("FireStrikeCustom") and not f.__contains__("FAILED")]
+        fileList = [f for f in fileList if f.__contains__("FireStrikeCustom") and not f.__contains__("FAILED")]
 
     # 去掉含old字符的文件
     seletedFiles = list(filter(lambda x: 'old' not in x, fileList))
@@ -78,6 +75,14 @@ def extract_3dResult(filename,dst_name):
         log_error("{} is not a file".format(filename))
         sys.exit(0)
 
+def is_exist(srcPath,app,item):
+    rootDir = os.path.dirname(srcPath)
+    xml_log = extract_3dResult(srcPath, os.path.join(rootDir, f"3dmarkResult-{app}-{common.get_time()}.xml"))
+    data = read_xml(xml_log, item)
+    if data!=-1:
+        return True
+    else:
+        return False
 def read_xml(file_path,item):
     data=float()
     find_it=bool()
@@ -101,11 +106,11 @@ def get_3dmark_score(srcPath,dstFile,data):
     xml_log = extract_3dResult(srcPath, os.path.join(rootDir, f"3dmarkResult-{data[1]}-{common.get_time()}.xml"))
     score=float()
     if data[1]=="TimeSpy":
-        score = read_xml(xml_log, "TimeSpyExtremeCustomGraphicsScore")
+        score = read_xml(xml_log, "TimeSpyExtremeGraphicsScore")
     elif data[1]=="TimeSpy_FPS":
-        scoreAll=read_xml(xml_log,"TimeSpyExtremeCustomGraphicsScore")
-        test1=read_xml(xml_log,"TimeSpyCustomGraphicsTest1")
-        test2=read_xml(xml_log,"TimeSpyCustomGraphicsTest2")
+        scoreAll=read_xml(xml_log,"TimeSpyExtremeGraphicsScore")
+        test1=read_xml(xml_log,"TimeSpyExtremeGraphicsTest1")
+        test2=read_xml(xml_log,"TimeSpyExtremeGraphicsTest2")
         # TODO 再验证test1=-1的情况
         # if scoreAll == 0 and test1 == -1 and test2 != 0:
         if scoreAll == 0 and test2 != 0:

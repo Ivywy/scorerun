@@ -36,8 +36,8 @@ def csv2excel(csv_path,excel_path,mode):
                 'GPU0 Frequencies Actual Frequency GFXCLK', 'GPU0 Power TGP Power', 'GPU0 Temperature Hotspot',
                 'GPU0 Temperature MEM', 'GPU0 Fan PWM']
 
-    # row_head = ['GPU0 Power Socket Power', 'GPU0 Frequencies Target Frequency LCLK',
-    #             'GPU0 Frequencies Actual Frequency LCLK', 'GPU0 Power TGP Power', 'GPU0 Temperature Hotspot',
+    # row_head = ['GPU0 Power Socket Power', 'GPU0 GDFLL Frequencies DFLL0 Targe',
+    #             'GPU0 GDFLL Frequencies DFLL0 Pre-DS', 'GPU0 Power TGP Power', 'GPU0 Temperature Hotspot',
     #             'GPU0 Temperature MEM', 'GPU0 Fan PWM']
     _,file_name=os.path.split(excel_path)
     if not os.path.exists(excel_path):

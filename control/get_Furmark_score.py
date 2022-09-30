@@ -16,6 +16,10 @@ def get_FurMark_log(rootDir,dstPath):
             if file=="FurMark-Scores.txt":
                 selectFile=file
                 break
+        if selectFile=="":
+            log_error(f"No file named 'FurMark-Scores.txt' in {rootDir},Please check!")
+            return
+
         dstPath = common.copyfile(os.path.join(rootDir, selectFile), dstPath)
         return dstPath
 
@@ -51,6 +55,10 @@ def get_FurMark_score(srcPath,dstFile,data):
 
     if not os.path.isfile(srcPath):
         log_error("input file is not exists")
+        return
+
+    if not os.path.getsize(srcPath):
+        log_error(f"{srcPath} is empty!")
         return
 
     with open(srcPath, "r") as f:

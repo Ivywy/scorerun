@@ -44,7 +44,6 @@ def collect_log(srcPath,workPath,app,mode):
             get_Heaven_score(workPath,resultXls,[mode,app])
         else:
             log_error(f"{app} log not found!")
-            return
 
     elif app == "FurMark":
         workPath=get_FurMark_log(srcPath,workPath)
@@ -52,7 +51,6 @@ def collect_log(srcPath,workPath,app,mode):
             get_FurMark_score(workPath,resultXls,[mode,app])
         else:
             log_error(f"{app} log not found!")
-            return
 
     elif app in ["TimeSpy","TimeSpy_FPS", "FireStrike"]:
         workPath=get_3dmark_log(srcPath,workPath,app)
@@ -60,7 +58,6 @@ def collect_log(srcPath,workPath,app,mode):
             get_3dmark_score(workPath,resultXls,[mode,app])
         else:
             log_error(f"{app} log not found!")
-            return
 
 
     log_info(f"+++++++++++++Begin collect {app} pm log++++++++++++++++++++")

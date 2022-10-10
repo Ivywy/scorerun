@@ -23,7 +23,7 @@ def read_Heaven_log(file_path):
     else:
         log_error("There are no keyword 'total' in file {}".format(file_path))
         return None
-def get_Heaven_log(rootDir, dstPath):
+def get_Heaven_log_old(rootDir, dstPath):
     '''
     :param rootDir: Log path where generated directory
     :param dstPath: The destination path from the rootDir copy
@@ -59,8 +59,8 @@ def get_Heaven_log(rootDir, dstPath):
             if read_Heaven_log(heavenlog) != None:
                 # copy to work path
                 dstPath=common.copyfile(heavenlog, dstPath)
-                if os.path.exists(heavenlog) == False:
-                    raise Exception(f"File {heavenlog} copy Failed!")
+                if os.path.exists(dstPath) == False:
+                    log_error(f"File {dstPath} copy Failed!")
                 continue_ = True
                 break
 
@@ -71,6 +71,25 @@ def get_Heaven_log(rootDir, dstPath):
 
     if continue_ == False:
         log_error("No matched logs were found of heaven,please press enter to continue or esc to exit")
+
+    return dstPath
+
+def get_Heaven_log(rootDir, dstPath):
+    '''
+    :param rootDir: Log path where generated directory
+    :param dstPath: The destination path from the rootDir copy
+    :return:
+    '''
+
+    heavenlog = os.path.join(rootDir, "log.html")
+
+    if read_Heaven_log(heavenlog) != None:
+        # copy to work path
+        dstPath=common.copyfile(heavenlog, dstPath)
+        if os.path.exists(dstPath) == False:
+            log_error(f"File {dstPath} copy Failed!")
+    else:
+        log_error("Heaven no log generated!!!!")
 
     return dstPath
 

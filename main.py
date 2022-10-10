@@ -70,7 +70,7 @@ if __name__ == '__main__':
         1.log path
         2. destination excel file path
         3.data (data[0] must in ["AC+HG", "DC+HG", "AC+NoHG", "DC+NoHG"]
-                data[1] must in [["TimeSpy", "FurMark", "Heaven", "FireStrike","3dmark11"]])
+                data[1] must in [["TimeSpy", "TimeSpy_FPS","FurMark", "Heaven", "FireStrike","3dmark11"]])
     """
     # src log path
     markPath=r"C:\Users\gvle\Documents\3DMark"
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     dstPath=args_.destination_path
     mode = args_.mode
     app = args_.application
-    appAll=["TimeSpy", "FurMark", "Heaven", "FireStrike","3dmark11"]
+    appAll=["TimeSpy", "TimeSpy_FPS","FurMark", "Heaven", "FireStrike","3dmark11"]
     modeAll=["AC+HG", "DC+HG", "AC+NoHG", "DC+NoHG"]
     # dstPath = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), "tmp", mode + '-' + common.get_time())
     if not os.path.exists(dstPath):

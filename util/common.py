@@ -83,3 +83,16 @@ def get_pm_key(app):
 	else:
 		log_error(f'appname error,{app} should in ["TimeSpy", "TimeSpy_FPS","FurMark", "Heaven", "FireStrike","3dmark11"]')
 
+
+def get_pm_csv_key(app):
+	if app=="TimeSpy" or app=="TimeSpy_FPS":
+		return "3dmark13_timespy_extreme_perf_pm.csv"
+	elif app=="FireStrike":
+		return "3dmark13_firestrike_perf_pm.csv"
+	elif app=="Heaven":
+		return "heaven_perf_pm.csv"
+	elif app=="FurMark":
+		return "furmark_perf_pm.csv"
+	else:
+		log_error(f'appname error,{app} should in ["TimeSpy", "TimeSpy_FPS","FurMark", "Heaven", "FireStrike","3dmark11"]')
+

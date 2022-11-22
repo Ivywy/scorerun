@@ -26,7 +26,7 @@ def get_3dmark_log(rootDir, dstPath, app):
                     os.path.isfile(os.path.join(rootDir, f)) and not f.__contains__('old') and f.endswith('.3dmark-result')]
 
     if app == "TimeSpy":
-        fileList = [f for f in fileList if f.__contains__("TimeSpyExtreme") and not f.__contains__("FAILED") and f.__contains__("-2173-")]
+        fileList = [f for f in fileList if f.__contains__("TimeSpyExtreme") and not f.__contains__("FAILED") and not f.__contains__("-0-")]
     elif app == "TimeSpy_FPS":
         fileList = [f for f in fileList if f.__contains__("TimeSpyExtreme") and not f.__contains__("FAILED") and f.__contains__("-0-")]
 

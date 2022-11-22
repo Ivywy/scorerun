@@ -132,8 +132,10 @@ def seek_latest_log(rootDir,app,dstPath):
     log_debug(f"finalPath={final_path}")       
 
     # change directory name
-    for dir in dir_list:
-        common.changeName(os.path.join(rootDir,dir))
+    dir_list.remove(dic[maxNum])
+    if len(dir_list) > 0:
+        for dir in dir_list:
+            common.changeName(os.path.join(rootDir,dir))
     
     return final_path
 
